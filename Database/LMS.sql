@@ -5,7 +5,7 @@ create table Role
 (
     ID int identity(1,1) primary key,
     -- role_name
-    role_name varchar(255) not null,
+    role_name varchar(255) not null UNIQUE,
 )
 
 -- create table user: luu thong tin chung cua User
@@ -13,15 +13,15 @@ create table [User]
 (
     ID int identity(1,1) primary key,
     -- user_name
-    user_name varchar(255) not null,
+    user_name varchar(255) not null UNIQUE, 
     -- user_password
     user_password varchar(255) not null,
     -- user_email
-    user_email varchar(255) not null,
+    user_email varchar(255) not null UNIQUE,
+    -- full_name
+    full_name varchar(255) not null,
     -- xac dinh vai tro cua user
     user_role_id int foreign key references Role(ID),
-    -- create_at datetime auto insert
-    create_at datetime default getdate()
 )
 
 -- create table Class to store all information about class and 1 teacher who teach that class
@@ -38,22 +38,24 @@ CREATE table Class(
     class_code varchar(255) not null,
     -- class_status show active or not
     class_status int not null,
+    -- teacher_id foreign key with user table
+    teacher_id int foreign key references [User](ID),
     -- create_at datetime auto insert
     create_at datetime default getdate(),
-    -- create_by foreign key with user table
-    create_by int foreign key references [User](ID),
 )
 
--- luu thong tin ve User va vai tro cua User trong Class => lien ket giua lop hoc va nguoi dung (ca giao vien va hoc sinh)
--- moi ban ghi trong bang nay dai dien cho 1 user da tham gia vao 1 lop hoc
-create table classUser
+create table classStudent
 (
+    -- primary key
     ID int identity(1,1) primary key,
     -- class_id foreign key with class table
-    class_id int foreign key references Class(ID),
+    idClass int foreign key references Class(ID),
     -- user_id foreign key with user table
-    user_id int foreign key references [User](ID),
+    idStudent int foreign key references [User](ID),
 )
+
+-- ensure that we dont add same student in 1 class
+alter table classStudent add constraint unique_class_student unique(idClass, idStudent)
 
 -- luu thong tin chung cua Group : ten nhom, lop hoc ma nhom do thuoc ve
 create table [Group]
@@ -63,21 +65,24 @@ create table [Group]
     group_name varchar(255) not null,
     -- class_id foreign key with class table
     class_id int foreign key references Class(ID),
+    -- leader_id foreign key with user table
+    leader_id int foreign key references [User](ID),
 )
 
 -- the hien quan he giua group va user
 -- moi ban ghi trong bang nay dai dien cho 1 user da tham gia vao 1 nhom
 create table Group_Student
 (
+    -- primary key
     ID int identity(1,1) primary key,
     -- group_id foreign key with group table
     group_id int foreign key references [Group](ID),
-    -- student_id foreign key with student table
-    student_id int foreign key references [User](ID),
-    -- role_id foreign key with role table
-    role_id int foreign key references Role(ID),
+    -- user_id foreign key with user table
+    user_id int foreign key references [User](ID),
 )
 
+-- ensure that we dont add same student in 1 group
+alter table Group_Student add constraint unique_group_student unique(group_id, user_id)
 
 -- Để giải quyết việc người dùng chỉ có thể truy cập tài nguyên của lớp hoặc nhóm mình tham gia, 
 -- cần cập nhật câu truy vấn SELECT của mình để kiểm tra vai trò của người dùng và các quan hệ giữa các bảng. 
@@ -96,9 +101,7 @@ AND r.RoleName = 'student';
 */
 
 -- ensure that each student can only be assigned to one group in a classUser
-ALTER TABLE Group_Student
-ADD CONSTRAINT UQ_Group_Student_Student_Group
-UNIQUE (student_id, group_id, classUser_id);
+
 
 -- create table Assignment
 create table Assignment
@@ -107,13 +110,13 @@ create table Assignment
     -- assignment_name
     assignment_name varchar(255) not null,
     -- assignment_description
-    assignment_description varchar(255) not null,
+    assignment_description,
     -- assignment_deadline
     assignment_deadline datetime not null,
     -- teacher_id foreign key with user table
     teacher_id int foreign key references [User](ID),
-    -- classUser_id foreign key with classUser table
-    classUser_id int foreign key references classUser(ID),
+    -- class_id foreign key with class table
+    class_id int foreign key references Class(ID),
     -- group_id foreign key with group table
     group_id int foreign key references [Group](ID),
 )
@@ -122,12 +125,10 @@ create table Assignment
 create table Submissions
 (
     ID int identity(1,1) primary key,
-    -- file_url
-    file_url varchar(255) not null,
     -- content
     content varchar(255) not null,
-    -- grade
-    grade int,
+    -- score
+    grade double,
     -- teacher feedback
     teacher_feedback varchar(255),
     -- foreign key using classUser_id and student_id reference to Classuser(class_id, user_id)
@@ -151,66 +152,60 @@ create table Resource
     type varchar(255) not null,
     -- file url
     file_url varchar(255) not null,
-    -- assignment_id foreign key with assignment table
-    assignment_id int foreign key references Assignment(ID) on delete cascade,
-    -- submission_id foreign key with submission table
-    submission_id int foreign key references Submissions(ID) on delete cascade,
-    -- classUser_id foreign key with classUser table
-    classUser_id int foreign key references classUser(ID) on delete cascade,
-    -- upload_by foreign key with user table
-    creator_id int foreign key references [User](ID),
 )
 
 -- CREATE table assignment_resource
 create table Assignment_Resource
 (
-    ID int identity(1,1) primary key,
-    -- classUser_id foreign key with classUser table
-    classUser_id int foreign key references classUser(ID),
-    -- group_id foreign key with group table
-    group_id int foreign key references [Group](ID),
     -- assignment_id foreign key with assignment table
     assignment_id int foreign key references Assignment(ID),
     -- resource_id foreign key with resource table
     resource_id int foreign key references Resource(ID),
+    PRIMARY KEY (assignment_id, resource_id),
 )
 
 -- create table submission_resource
 create table Submission_Resource
 (
-    ID int identity(1,1) primary key,
-    -- classUser_id foreign key with classUser table
-    classUser_id int foreign key references classUser(ID),
-    -- group_id foreign key with group table
-    group_id int foreign key references [Group](ID),
     -- submission_id foreign key with submission table
     submission_id int foreign key references Submissions(ID),
     -- resource_id foreign key with resource table
     resource_id int foreign key references Resource(ID),
+    PRIMARY KEY (submission_id, resource_id),
 )
 
 -- restrict accesibility of resource on each class
-create table classUser_Resource
+create table class_Resource
 (
-    ID int identity(1,1) primary key,
     -- classUser_id foreign key with classUser table
     classUser_id int foreign key references classUser(ID),
     -- resource_id foreign key with resource table
     resource_id int foreign key references Resource(ID),
+    PRIMARY KEY (classUser_id, resource_id),
 )
 
 -- restrict accesibility of resource on each group
 create table Group_Resource
 (
-    ID int identity(1,1) primary key,
     -- group_id foreign key with group table
     group_id int foreign key references [Group](ID),
     -- resource_id foreign key with resource table
     resource_id int foreign key references Resource(ID),
+    PRIMARY KEY (group_id, resource_id),
 )
--- Sau khi cập nhật các bảng, chúng ta sẽ có thể tạo các quyền truy cập tài nguyên cho từng lớp và nhóm bằng cách thêm dữ liệu vào các bảng ClassResource và GroupResource.
 
--- Ví dụ, để cho phép lớp 1 truy cập vào một tài nguyên có resource_id là 1, chúng ta sẽ thêm một bản ghi mới vào bảng ClassResource:
--- insert into classUser_Resource (classUser_id, resource_id) values (1, 1)
--- insert into Group_Resource (group_id, resource_id) values (2, 2) to allow group 2 access to resource 2
-
+CREATE TABLE Chat (
+    ChatId INT PRIMARY KEY,
+    -- group_id foreign key with group table
+    group_id int foreign key references [Group](ID),
+    -- sender_id foreign key with user table
+    sender_id int foreign key references [User](ID),
+    -- receiver_id foreign key with user table
+    receiver_id int foreign key references [User](ID),
+    -- message
+    message varchar(255) not null,
+    -- file path
+    file_path varchar(255),
+    -- get date time sent
+    sent_date datetime default getdate(),
+);
