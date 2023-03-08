@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login - Your System Name</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Roboto', sans-serif;
+			background-color: #f8f8f8;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			max-width: 400px;
+			margin: 0 auto;
+			padding: 50px 20px;
+			box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+			background-color: #ffffff;
+			border-radius: 5px;
+			text-align: center;
+		}
+
+		.container h1 {
+			font-size: 28px;
+			margin-bottom: 30px;
+		}
+
+		.form-input {
+			width: 100%;
+			padding: 10px;
+			margin-bottom: 20px;
+			border: none;
+			background-color: #f0f0f0;
+			border-radius: 5px;
+			font-size: 16px;
+			color: #333333;
+		}
+
+		.form-submit {
+			width: 100%;
+			padding: 10px;
+			border: none;
+			background-color: #0099cc;
+			color: #ffffff;
+			font-size: 16px;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		.form-submit:hover {
+			background-color: #0077cc;
+		}
+
+	</style>
+</head>
+<body>
+
+	<div class="container">
+		<h1>Login</h1>
+		<form action="" method="post">
+			<input type="text" name="username" placeholder="Username" class="form-input" required>
+			<input type="password" name="password" placeholder="Password" class="form-input" required>
+			<input type="submit" value="Login" class="form-submit">
+		</form>
+	</div>
+
+</body>
+</html>
