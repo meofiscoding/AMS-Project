@@ -1,3 +1,4 @@
+
 use LMS
 
 --quan ly quyen truy cap cua nguoi dung theo tung Role: thuan tien cho viec mo rong Role sau nay
@@ -110,7 +111,7 @@ create table Assignment
     -- assignment_name
     assignment_name varchar(255) not null,
     -- assignment_description
-    assignment_description,
+    assignment_description varchar(255) not null,
     -- assignment_deadline
     assignment_deadline datetime not null,
     -- teacher_id foreign key with user table
@@ -127,12 +128,12 @@ create table Submissions
     ID int identity(1,1) primary key,
     -- content
     content varchar(255) not null,
-    -- score
-    grade double,
+    -- score with datatype float
+    grade float,
     -- teacher feedback
     teacher_feedback varchar(255),
     -- foreign key using classUser_id and student_id reference to Classuser(class_id, user_id)
-    classUser_id int foreign key references classUser(ID),
+    classUser_id int foreign key references classStudent(ID),
     -- submission_date
     submission_date datetime default getdate(),
     -- assignment_id foreign key with assignment table
@@ -143,7 +144,7 @@ create table Submissions
 
 -- Nếu muốn quản lý tài nguyên cho từng lớp học, thì gắn tài nguyên với từng class là cách tốt nhất. Tuy nhiên, nếu muốn sử dụng tài nguyên chung cho nhiều lớp học hoặc nhóm khác nhau, thì gắn tài nguyên với từng group là cách tốt nhất.
 -- create table Resource
-create table Resource
+create table [Resource]
 (
     ID int identity(1,1) primary key,
     -- resource_name
@@ -160,7 +161,7 @@ create table Assignment_Resource
     -- assignment_id foreign key with assignment table
     assignment_id int foreign key references Assignment(ID),
     -- resource_id foreign key with resource table
-    resource_id int foreign key references Resource(ID),
+    resource_id int foreign key references [Resource](ID),
     PRIMARY KEY (assignment_id, resource_id),
 )
 
@@ -170,7 +171,7 @@ create table Submission_Resource
     -- submission_id foreign key with submission table
     submission_id int foreign key references Submissions(ID),
     -- resource_id foreign key with resource table
-    resource_id int foreign key references Resource(ID),
+    resource_id int foreign key references [Resource](ID),
     PRIMARY KEY (submission_id, resource_id),
 )
 
@@ -178,9 +179,9 @@ create table Submission_Resource
 create table class_Resource
 (
     -- classUser_id foreign key with classUser table
-    classUser_id int foreign key references classUser(ID),
+    classUser_id int foreign key references classStudent(ID),
     -- resource_id foreign key with resource table
-    resource_id int foreign key references Resource(ID),
+    resource_id int foreign key references [Resource](ID),
     PRIMARY KEY (classUser_id, resource_id),
 )
 
@@ -190,7 +191,7 @@ create table Group_Resource
     -- group_id foreign key with group table
     group_id int foreign key references [Group](ID),
     -- resource_id foreign key with resource table
-    resource_id int foreign key references Resource(ID),
+    resource_id int foreign key references [Resource](ID),
     PRIMARY KEY (group_id, resource_id),
 )
 
