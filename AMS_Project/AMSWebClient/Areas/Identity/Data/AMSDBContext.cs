@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BussinessObject.DataAccess;
 
-public class AMSContext : IdentityDbContext<IdentityUser>
+public class AMSDBContext : IdentityDbContext<IdentityUser>
 {
-    public AMSContext(DbContextOptions<AMSContext> options)
+    public AMSDBContext(DbContextOptions<AMSDBContext> options)
         : base(options)
     {
     }
