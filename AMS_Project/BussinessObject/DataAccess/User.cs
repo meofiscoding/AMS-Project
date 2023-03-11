@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace BussinessObject.DataAccess
 {
-    public partial class User
+    public partial class User : IdentityUser<int>
     {
         public User()
         {
@@ -17,8 +18,8 @@ namespace BussinessObject.DataAccess
             Submissions = new HashSet<Submission>();
         }
 
-        public int Id { get; set; }
-        public string UserName { get; set; } = null!;
+        public override int Id { get; set; }
+        public override string UserName { get; set; } = null!;
         public string UserPassword { get; set; } = null!;
         public string UserEmail { get; set; } = null!;
         public string FullName { get; set; } = null!;

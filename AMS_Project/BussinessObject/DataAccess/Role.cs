@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace BussinessObject.DataAccess
 {
-    public partial class Role
+    public partial class Role : IdentityRole<int>
     {
         public Role()
         {
             Users = new HashSet<User>();
         }
 
-        public int Id { get; set; }
+        public override int Id { get; set; }
         public string RoleName { get; set; } = null!;
 
         public virtual ICollection<User> Users { get; set; }
