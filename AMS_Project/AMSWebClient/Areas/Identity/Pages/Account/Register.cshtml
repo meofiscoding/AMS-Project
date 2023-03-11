@@ -5,6 +5,17 @@
 }
 
 <style>
+    .card {
+        color:white;
+        backdrop-filter: blur(10px);
+        background-image: url("https://picsum.photos/1920/1080");
+        background-repeat: no-repeat;
+        background-size: cover;
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
     /* Styling for the registration form */
     #registerForm {
         max-width: 500px;
@@ -95,7 +106,7 @@
                 <div class="card-body p-5">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
-                            <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+                            <h2 class="text-center mb-4" style="font-weight:bold">@ViewData["Title"]</h2>
                             <hr class="mb-4">
                             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
