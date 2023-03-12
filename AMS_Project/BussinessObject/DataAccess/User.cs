@@ -22,7 +22,7 @@ namespace BussinessObject.DataAccess
         public override string UserName { get; set; } = null!;
         public string UserPassword { get; set; } = null!;
         public string UserEmail { get; set; } = null!;
-        public string FullName { get; set; } = null!;
+        public string? FullName { get; set; } = null!;
         public int? UserRoleId { get; set; }
 
         public virtual Role? UserRole { get; set; }

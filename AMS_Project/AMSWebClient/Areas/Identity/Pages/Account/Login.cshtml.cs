@@ -14,6 +14,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace AMSWebClient.Areas.Identity.Pages.Account
 {
@@ -21,11 +26,14 @@ namespace AMSWebClient.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly IConfiguration _configuration;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, IConfiguration configuration)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _configuration = configuration;
+
         }
 
         /// <summary>
@@ -84,12 +92,20 @@ namespace AMSWebClient.Areas.Identity.Pages.Account
             public bool RememberMe { get; set; }
         }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
+            //var token = HttpContext.Request.Cookies["token"];
+            //if (!string.IsNullOrEmpty(token))
+            //{
+            //    // Redirect to the classes page
+            //    //Response.Redirect("/Classes/Index");
+            //    return LocalRedirect(returnUrl?? Url.Content("~/Classes/Index"));
+            //}
             if (!string.IsNullOrEmpty(ErrorMessage))
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
+
 
             returnUrl ??= Url.Content("~/");
 
@@ -99,42 +115,73 @@ namespace AMSWebClient.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             ReturnUrl = returnUrl;
-        }
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
-        {
-            //if login success, redirect to Class page
-            returnUrl ??= Url.Content("~/Class/Index");
-
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            if (ModelState.IsValid)
-            {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return Page();
-                }
-            }
-
-            // If we got this far, something failed, redisplay form
             return Page();
         }
+        //    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        //    {
+        //        //if login success, redirect to Class page
+        //        returnUrl ??= Url.Content("~/Classes/Index");
+
+        //        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+        //        if (ModelState.IsValid)
+        //        {
+        //            // This doesn't count login failures towards account lockout
+        //            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+        //            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        //            if (result.Succeeded)
+        //            {
+        //                //get user information
+        //                var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
+        //                //generate JWT token
+        //                var jwtKey = _configuration["Jwt:Key"];
+        //                var jwtIssuer = _configuration["Jwt:Issuer"];
+        //                var jwtAudience = _configuration["Jwt:Audience"];
+
+        //                var claims = new List<Claim>
+        //        {
+        //            new Claim(ClaimTypes.Name, user.UserName),
+        //            new Claim(ClaimTypes.Email, user.Email),
+        //            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+        //        };
+
+        //                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+        //                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        //                var tokenDescriptor = new SecurityTokenDescriptor
+        //                {
+        //                    Subject = new ClaimsIdentity(claims),
+        //                    Expires = DateTime.Now.AddDays(1),
+        //                    SigningCredentials = creds
+        //                };
+
+        //                var tokenHandler = new JwtSecurityTokenHandler();
+        //                var token = tokenHandler.CreateToken(tokenDescriptor);
+        //                _logger.LogInformation("User logged in.");
+        //                // Return JWT token as JSON object
+        //                var encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
+        //                // Store token in TempData
+        //                TempData["JwtToken"] = encodedToken;
+        //                return LocalRedirect(returnUrl);
+        //            }
+        //            if (result.RequiresTwoFactor)
+        //            {
+        //                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+        //            }
+        //            if (result.IsLockedOut)
+        //            {
+        //                _logger.LogWarning("User account locked out.");
+        //                return RedirectToPage("./Lockout");
+        //            }
+        //            else
+        //            {
+        //                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        //                return Page();
+        //            }
+        //        }
+
+        //        // If we got this far, something failed, redisplay form
+        //        return Page();
+        //    }
     }
 }

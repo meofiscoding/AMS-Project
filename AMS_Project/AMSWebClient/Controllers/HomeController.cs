@@ -15,6 +15,15 @@ namespace AMSWebClient.Controllers
 
         public IActionResult Index()
         {
+            //if user is authenticated, redirect to the dashboard
+            //if (User.Identity.IsAuthenticated)
+            //{
+            //    return RedirectToAction("Index", "Classes");
+            //}
+            //else
+            //{
+            //    return RedirectToAction("Index", "Home");
+            //}
             return View();
         }
 

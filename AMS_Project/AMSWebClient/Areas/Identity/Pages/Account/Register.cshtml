@@ -47,17 +47,6 @@
             color: #e5b69e;
         }
 
-    .btn-primary {
-        background-color: #e5b69e;
-        border-color: #e5b69e;
-        transition: all 0.3s ease;
-    }
-
-        .btn-primary:hover {
-            background-color: #d7a58c;
-            border-color: #d7a58c;
-        }
-
     /* Styling for the external login section */
     .external-logins {
         margin-top: 1rem;
@@ -115,6 +104,24 @@
                                     <label asp-for="Input.Email">Email address</label>
                                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                                 </div>
+                                <label for="academic-status">Select your academic status:</label>
+                                <div id="academic-status" style="display:flex; justify-content: space-around">
+                                    <div>
+                                        <input type="radio" id="status" asp-for="Input.Role" value="student" checked>
+                                    <label for="student">Student</label>
+                                    </div>
+                                  <div>
+                                        <input asp-for="Input.Role" type="radio" id="teacher" value="teacher">
+                                        <label for="teacher">Teacher</label>
+                                  </div>
+                                   
+                                </div>
+                                <div class="form-floating mb-3 mt-3">
+                                    <input asp-for="Input.FullName" class="form-control" autocomplete="username" aria-required="true" placeholder="Full name">
+                                    <label asp-for="Input.FullName">Full name</label>
+                                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                                </div>
+                              
                                 <div class="form-floating mb-3">
                                     <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password">
                                     <label asp-for="Input.Password">Password</label>
@@ -125,7 +132,7 @@
                                     <label asp-for="Input.ConfirmPassword">Confirm password</label>
                                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                                 </div>
-                                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+                                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-warning">Register</button>
                             </form>
                             <div class="text-center mt-4">
                                 <p class="mb-0">Already have an account? <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl">Login here</a></p>
@@ -154,4 +161,22 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        //make sumit button disabled by default
+        $("#registerSubmit").prop("disabled", true);
+        //check if all fields are filled
+        $("#registerForm").on("keyup", function () {
+            var empty = false;
+            $("#registerForm input").each(function () {
+                if ($(this).val() == '') {
+                    empty = true;
+                }
+            });
+            if (empty) {
+                $("#registerSubmit").prop("disabled", true);
+            } else {
+                $("#registerSubmit").prop("disabled", false);
+            }
+        });
+    </script>
 }

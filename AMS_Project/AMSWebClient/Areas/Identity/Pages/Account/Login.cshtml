@@ -8,7 +8,7 @@
 <style>
     .card {
         backdrop-filter: blur(10px);
-        background-image: url("https://picsum.photos/1920/1080");
+        @* background-image: url("https://picsum.photos/1920/1080"); *@
         background-repeat: no-repeat;
         background-size: cover;
         border: none;
@@ -105,4 +105,36 @@
 </div>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        //check if localStorage is have token item
+        //if (localStorage.getItem("token") != null) {
+            //if have, redirect to home page
+        //    window.location.href = "/Classes";
+       // }
+        //event on form submit
+        $("#account").submit(function (e) {
+             debugger;
+            e.preventDefault();
+            //get username and password
+            var email = $("#Input_Email").val();
+            var password = $("#Input_Password").val();
+            //make ajax call to login
+            $.ajax({
+                url: "https://localhost:7290/api/Auth/login",
+                type: "POST",
+                data: JSON.stringify({ Email: email, Password: password}),
+                contentType: "application/json",
+                success: function (data) {
+                    // If successful, store the token in local storage
+                    localStorage.setItem("token", data.token);
+                    //if success, redirect to home page
+                    window.location.href = "/Classes";
+                },
+                error: function (xhr, status, error) {
+                    //if error, show error message
+                    alert(xhr.responseText);
+                }
+            });
+        });
+    </script>
 }
