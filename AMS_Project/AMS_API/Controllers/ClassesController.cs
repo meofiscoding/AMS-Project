@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BussinessObject.DataAccess;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AMS_API.Controllers
 {
@@ -24,6 +25,7 @@ namespace AMS_API.Controllers
 
         // GET: api/Classes
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Class>>> GetClasses()
         {
             return await _context.Classes.ToListAsync();
