@@ -1,4 +1,4 @@
-﻿using BussinessObject.DataAccess;
+﻿using BusinessObject.DataAccess;
 
 namespace DataAccess
 {
