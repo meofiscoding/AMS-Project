@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+   $(document).ready(function () {
+    debugger;
+    var token = localStorage.getItem("token");
+    if (!token) {
+        // redirect to login page
+        window.location.href = "Identity/Account/Login";
+    } else {
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:7290/api/ClassStudents",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function (data) {
+                // dispplay html classes
+            },
+            error: function (error) {
+                if (error.status === 401) {
+                    // redirect to login page
+                    window.location.href = "Identity/Account/Login";
+                } else {
+                    // handle other error response
+                }
+            }
+        });
+    }
+});
+
+    </script>
+}

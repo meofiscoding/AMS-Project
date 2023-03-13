@@ -1,5 +1,6 @@
-
-use LMS
+create database AMS
+go
+use AMS
 
 --quan ly quyen truy cap cua nguoi dung theo tung Role: thuan tien cho viec mo rong Role sau nay
 create table Role
@@ -13,14 +14,12 @@ create table Role
 create table [User]
 (
     ID int identity(1,1) primary key,
-    -- user_name
-    user_name varchar(255) not null UNIQUE, 
     -- user_password
     user_password varchar(255) not null,
     -- user_email
     user_email varchar(255) not null UNIQUE,
     -- full_name
-    full_name varchar(255) not null,
+    full_name varchar(255) null,
     -- xac dinh vai tro cua user
     user_role_id int foreign key references Role(ID),
 )

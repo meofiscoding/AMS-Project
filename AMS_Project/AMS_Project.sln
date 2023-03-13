@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Re
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{1F1BD5BE-7D38-4558-ACF0-094606A57764}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMSWebClient", "AMSWebClient\AMSWebClient.csproj", "{19E1C235-7104-4983-899B-7E0CE5AC1CBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AMSWebClient", "AMSWebClient\AMSWebClient.csproj", "{19E1C235-7104-4983-899B-7E0CE5AC1CBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMSClient", "AMSClient\AMSClient.csproj", "{BBF1E335-E5C7-45E3-A854-66BD6AE8114E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{EBC29592-9A35-4923-8D51-CAEC8CDF8756}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{19E1C235-7104-4983-899B-7E0CE5AC1CBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19E1C235-7104-4983-899B-7E0CE5AC1CBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19E1C235-7104-4983-899B-7E0CE5AC1CBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBF1E335-E5C7-45E3-A854-66BD6AE8114E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBF1E335-E5C7-45E3-A854-66BD6AE8114E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBF1E335-E5C7-45E3-A854-66BD6AE8114E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBF1E335-E5C7-45E3-A854-66BD6AE8114E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBC29592-9A35-4923-8D51-CAEC8CDF8756}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBC29592-9A35-4923-8D51-CAEC8CDF8756}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBC29592-9A35-4923-8D51-CAEC8CDF8756}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBC29592-9A35-4923-8D51-CAEC8CDF8756}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
