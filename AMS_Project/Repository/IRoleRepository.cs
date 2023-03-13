@@ -10,6 +10,6 @@ namespace Repository
     public interface IRoleRepository
     {
         //get role by name
-        Role GetRoleByName(string roleName);
+        Role GetRole(int id);
     }
 }

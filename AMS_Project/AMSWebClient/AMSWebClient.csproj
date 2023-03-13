@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AMS_API\AMS_API.csproj" />
-    <ProjectReference Include="..\BussinessObject\BussinessObject.csproj" />
   </ItemGroup>
 
   <ItemGroup>

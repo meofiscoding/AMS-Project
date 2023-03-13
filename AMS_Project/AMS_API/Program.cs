@@ -1,4 +1,4 @@
-using BussinessObject.DataAccess;
+using BusinessObject.DataAccess;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;

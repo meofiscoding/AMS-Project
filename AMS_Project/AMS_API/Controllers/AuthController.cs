@@ -1,10 +1,11 @@
 ﻿using AMS_API.ViewModel;
-using BussinessObject.DataAccess;
+using BusinessObject.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Repository;
+using Swashbuckle.Swagger;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -33,83 +34,77 @@ namespace AMS_API.Controllers
 
         // POST api/<AuthController>/register
         [HttpPost("register")]
-        public IActionResult Register(RegisterViewModel registerViewModel)
+        public IActionResult Register(User user)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                //create user
-                var user = new User
-                {
-                    UserName = registerViewModel.UserName,
-                    UserPassword = registerViewModel.Password,
-                    UserEmail = registerViewModel.Email,
-                    UserRoleId = _roleRepository.GetRoleByName(registerViewModel.Role).Id,
-                };
-                //add to db
-                _userRepository.AddUser(user);
-                return Ok(new { message = "User registered successfully" });
+                return BadRequest("Invalid data.");
             }
-            catch (Exception ex)
+            var userExists = _userRepository.GetUserByEmail(user.UserEmail);
+            if (userExists != null)
             {
-                //log the exception message
-                Console.WriteLine(ex.Message);
-                throw;
+                return BadRequest("User already exists.");
             }
 
+            var userRole = _roleRepository.GetRole(user.UserRoleId.Value);
+
+            //hashing password
+            var passwordHasher = new PasswordHasher<User>();
+            user.UserPassword = passwordHasher.HashPassword(user, user.UserPassword);
+
+            var model = new User
+            {
+                UserEmail = user.UserEmail,
+                UserPassword = user.UserPassword,
+                UserRoleId = userRole.Id,
+                //UserRole = userRole,
+                FullName = user.FullName
+            };
+
+            _userRepository.AddUser(model);
+            return Ok("User registered successfully.");
         }
 
         [HttpPost("login")]
-        public IActionResult Login(LoginViewModel loginViewModel)
+        public IActionResult Login(User userModel)
         {
-            //cast to user
-            var user = _context.Users.FirstOrDefault(u => u.UserEmail == loginViewModel.Email);
-
-            //check if user exists
+            //find user
+            var user = _userRepository.GetUserByEmail(userModel.UserEmail);
             if (user == null)
             {
                 return Unauthorized();
             }
-            else
+
+            //verify password
+            var passwordHasher = new PasswordHasher<User>();
+            var result = passwordHasher.VerifyHashedPassword(user, user.UserPassword, userModel.UserPassword);
+
+            //check if password is correct
+            if (result != PasswordVerificationResult.Success)
             {
-                //hashing loginViewModel.Password
-                var passwordHasher = new PasswordHasher<User>();
-                var result = passwordHasher.VerifyHashedPassword(user, user.UserPassword.Replace("&#x2B;", "+"), loginViewModel.Password);
-
-                //check if password is correct
-                if (result == PasswordVerificationResult.Success)
-                {
-                    // Create claims based on the user object
-                    var claims = new[]
-                    {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName)
-            };
-
-
-                    // Generate symmetric security key based on the configuration value
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
-                    // Generate JWT
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["Jwt:Issuer"],
-                        audience: _configuration["Jwt:Audience"],
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddDays(7),
-                        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
-
-                    // Write the JWT as a string
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-                    // Return the JWT as the response
-                    return Ok(new { token = tokenString });
-                }
-                else
-                {
-                    return Unauthorized();
-                }
+                return BadRequest("Invalid password.");
             }
 
+            //get role
+            var role = _roleRepository.GetRole(user.UserRoleId.Value);
 
+            //generate token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.UserEmail),
+                    new Claim(ClaimTypes.Role, role.RoleName)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return Ok(new { token = tokenString });
         }
 
     }

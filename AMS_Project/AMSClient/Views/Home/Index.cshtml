@@ -6,3 +6,15 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+        //redirect to the login page if the local storage is empty
+        if(localStorage.getItem("token") == null)
+        {
+            window.location.href = "/Login";
+        }
+
+    </script>
+}

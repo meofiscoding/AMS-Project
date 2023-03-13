@@ -11,5 +11,6 @@ namespace Repository
     {
         //Add user
         void AddUser(User user);
+        User GetUserByEmail(string userEmail);
     }
 }

@@ -17,6 +17,18 @@ namespace BusinessObject.DataAccess
         {
         }
 
+
+
+        private void EnsureRolesSeeded()
+        {
+            if (!Roles.Any())
+            {
+                Roles.Add(new Role { RoleName = "Student" });
+                Roles.Add(new Role { RoleName = "Teacher" });
+                SaveChanges();
+            }
+        }
+
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Chat> Chats { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;

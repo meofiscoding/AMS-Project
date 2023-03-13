@@ -10,9 +10,9 @@ namespace Repository
 {
     public class RoleRepository : IRoleRepository
     {
-        public Role GetRoleByName(string roleName)
+        public Role GetRole(int id)
         {
-            return RoleDAO.GetRoleByName(roleName);
+            return RoleDAO.GetRole(id);
         }
     }
 }

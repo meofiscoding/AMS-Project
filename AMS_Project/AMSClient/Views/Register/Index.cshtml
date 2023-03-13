@@ -1,0 +1,127 @@
+﻿@{
+       ViewData["Title"] = "Register";
+}
+<style>
+    .error {
+        color: red;
+    }
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Registration Form</h3>
+                </div>
+                <div class="card-body">
+                    <form id="register-form">
+                         <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" class="form-control" name="full-name" placeholder="Full Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label><br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="role" id="teacher" value="4">
+                                <label class="form-check-label" for="teacher">Teacher</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="role" id="student" value="3" checked>
+                                <label class="form-check-label" for="student">Student</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control" name="email" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" name="password"  placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="re-password">Confirm Password</label>
+                            <input type="password" class="form-control" name="re-password" placeholder="Confirm Password" required >
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Register</button>
+                    </form>
+                     @* link to login page *@
+                        <div class="text-center">
+                            <a asp-action="Index" asp-controller="Login">Login</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script type="text/javascript">
+$(document).ready(function() {
+  $("#register-form").validate({
+    rules: {
+      email: {
+        required: true,
+        email: true
+      },
+      "full-name":{
+        required: true,
+        minlength: 3
+      },
+      password: {
+        required: true,
+        minlength: 6
+      },
+      "re-password": {
+        required: true,
+        //equal to password input name = password
+        equalTo: "input[name='password']"
+
+      }
+    },
+    messages: {
+        "full-name": {
+            required: "Please enter your full name",
+            minlength: "Your full name must be at least {0} characters long"
+        },
+      email: {
+        required: "Please enter your email address",
+        email: "Please enter a valid email address"
+      },
+      password: {
+        required: "Please enter your password",
+        minlength: "Your password must be at least {0} characters long"
+      },
+      "re-password": {
+        required: "Please confirm your password",
+        equalTo: "Your password and confirmation password do not match"
+      }
+    },
+    submitHandler: function(form) {
+      // Submit the form via AJAX to your Web API endpoint
+      $.ajax({
+        url: "https://localhost:7290/api/Auth/register",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+          FullName: $("input[name='full-name']").val(),
+          UserEmail: $("input[name='email']").val(),
+          UserPassword: $("input[name='password']").val(),
+          UserRoleId: $("input[name='role']:checked").val()
+        }),
+        success: function(response) {
+          // redirect to login page
+            window.location.href = "/Login";
+        },
+        error: function(xhr, status, error) {
+            // Display the error message
+            alert(xhr.responseJSON.message);
+        }
+      });
+    }
+  });
+});
+
+    </script>
+}

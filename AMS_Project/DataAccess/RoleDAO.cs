@@ -10,11 +10,18 @@ namespace DataAccess
     public static class RoleDAO
     {
         //get role by name
-        public static Role GetRoleByName(string roleName)
+        public static Role GetRole(int id)
         {
-            using (var db = new AMSContext())
+            try
             {
-                return db.Roles.Where(r => r.RoleName.ToLower().Equals(roleName.ToLower())).FirstOrDefault();
+                using (var db = new AMSContext())
+                {
+                    return db.Roles.FirstOrDefault(r => r.Id == id);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
         }
     }

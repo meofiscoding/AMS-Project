@@ -16,5 +16,11 @@ namespace Repository
             //add user to db
             UserDAO.AddUser(user);
         }
+
+        public User GetUserByEmail(string userEmail)
+        {
+            //get user by email
+            return UserDAO.GetUserByEmail(userEmail);
+        }
     }
 }
