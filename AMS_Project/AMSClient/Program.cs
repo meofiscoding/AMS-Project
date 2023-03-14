@@ -12,6 +12,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     SeedRole.Seed(services);
+    SeedUser.Seed(services);
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

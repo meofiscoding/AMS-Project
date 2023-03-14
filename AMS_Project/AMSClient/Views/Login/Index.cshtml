@@ -69,8 +69,10 @@
             window.location.href = "/Home";
         },
         error: function(xhr, status, error) {
-            // Display the error message
-            alert(xhr.responseJSON.message);
+              // Display the error message under the form
+            var errorMessage = xhr.responseText;
+            var errorDiv = $("<div class='error'></div>").text(errorMessage);
+            $("#login-form").prepend(errorDiv);
         }
                     })
         });
