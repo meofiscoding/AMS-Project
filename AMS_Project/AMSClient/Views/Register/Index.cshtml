@@ -121,6 +121,11 @@ $(document).ready(function() {
       });
     }
   });
+
+   //check if token is it localStorage
+    if(localStorage.getItem("token") != null) {
+         window.location.href = "/Home";
+    }
 });
 
     </script>

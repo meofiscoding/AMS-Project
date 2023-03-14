@@ -43,6 +43,10 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
+    //check if token is it localStorage
+    if(localStorage.getItem("token") != null) {
+         window.location.href = "/Home";
+    }
         //on login form submit
         $("#login-form").submit(function (e) {
             e.preventDefault();
