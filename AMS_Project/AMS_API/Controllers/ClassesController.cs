@@ -9,6 +9,8 @@ using BusinessObject.DataAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Repository;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace AMS_API.Controllers
 {
@@ -18,11 +20,13 @@ namespace AMS_API.Controllers
     public class ClassesController : ControllerBase
     {
         private readonly IClassRepository _classRepository;
+        private readonly IClassStudentRepository _classStudentRepository;
 
 
-        public ClassesController(IClassRepository classRepository)
+        public ClassesController(IClassRepository classRepository, IClassStudentRepository classStudentRepository)
         {
             _classRepository = classRepository;
+            _classStudentRepository = classStudentRepository;
         }
 
          // POST: api/Classes
@@ -32,7 +36,18 @@ namespace AMS_API.Controllers
          public async Task<ActionResult<Class>> PostClass(Class @class)
         {
             await _classRepository.CreateClass(@class);
-            return CreatedAtAction("GetClass", new { id = @class.Id }, @class);
+
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var teacherIdClaim = identity?.Claims.FirstOrDefault(c => c.Type == "ID");
+
+            var classStudent = new ClassStudent
+            {
+                IdClass = @class.Id,
+                IdStudent = int.Parse(teacherIdClaim.Value)
+            };
+
+            await _classStudentRepository.CreateClassStudent(classStudent);
+            return CreatedAtAction("PostClass", new { id = @class.Id }, @class);
         }
 
         //// GET: api/Classes/5

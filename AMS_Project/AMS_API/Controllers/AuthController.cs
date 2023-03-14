@@ -87,6 +87,11 @@ namespace AMS_API.Controllers
 
             //get role
             var role = _roleRepository.GetRole(user.UserRoleId.Value);
+            //check if userModel.role is the same as user.role
+            if (userModel.UserRoleId != user.UserRoleId)
+            {
+                return BadRequest("Invalid role.");
+            }
 
             //generate token
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -98,7 +103,8 @@ namespace AMS_API.Controllers
                     new Claim(ClaimTypes.Name, user.UserEmail),
                     new Claim(ClaimTypes.Role, role.RoleName),
                     new Claim("FullName", user.FullName),
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserEmail),
+                    new Claim("ID", user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Aud, _configuration["Jwt:Audience"]),
                     new Claim(JwtRegisteredClaimNames.Iss, _configuration["Jwt:Issuer"])

@@ -20,5 +20,15 @@ namespace DataAccess
                 return classStudents.Select(cs => context.Classes.FirstOrDefault(c => c.Id == cs.IdClass)).ToList();
             }
         }
+
+        //create classStudent
+        public static async Task CreateClassStudent(ClassStudent classStudent)
+        {
+            using (var context = new AMSContext())
+            {
+                context.ClassStudents.Add(classStudent);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

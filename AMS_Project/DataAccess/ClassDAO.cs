@@ -10,12 +10,12 @@ namespace DataAccess
     public class ClassDAO
     {
         //save class
-        public static Task SaveClass(Class @class)
+        public static async Task SaveClass(Class @class)
         {
             using (var context = new AMSContext())
             {
                 context.Classes.Add(@class);
-                return context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
         }
     }

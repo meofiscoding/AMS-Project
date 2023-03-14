@@ -1,6 +1,11 @@
 ﻿@{
        ViewData["Title"] = "Register";
 }
+<style>
+    .error {
+        color: red;
+    }
+</style>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -62,6 +67,8 @@
         //on login form submit
         $("#login-form").submit(function (e) {
             e.preventDefault();
+            //remove error div if exist
+            $(".error").remove();
             //call api to login
             $.ajax({
                  url: "https://localhost:7290/api/Auth/login",
@@ -80,7 +87,15 @@
         },
         error: function(xhr, status, error) {
               // Display the error message under the form
-            var errorMessage = xhr.responseText;
+            var errorMessage = "";
+            if(xhr.status == 401){
+                errorMessage = "Email or Password is incorrect"
+            }else if(xhr.status == 400){
+                errorMessage = "Role is incorrect"
+            }
+            else {
+                errorMessage = "Something went wrong";
+            }
             var errorDiv = $("<div class='error'></div>").text(errorMessage);
             $("#login-form").prepend(errorDiv);
         }

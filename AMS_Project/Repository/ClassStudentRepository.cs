@@ -10,6 +10,12 @@ namespace Repository
 {
     public class ClassStudentRepository : IClassStudentRepository
     {
+        //create classStudent
+        public Task CreateClassStudent(ClassStudent classStudent)
+        {
+            return ClassStudentDAO.CreateClassStudent(classStudent);
+        }
+
         public List<Class> GetClassByUserId(int userId)
         {
             return ClassStudentDAO.GetClassByUserId(userId);

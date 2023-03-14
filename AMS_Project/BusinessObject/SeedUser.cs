@@ -40,10 +40,18 @@ namespace BusinessObject
                     .Generate());
             }
 
-            foreach (var user in students)
+            //get id of student role from database and set to user
+            using (var db = new AMSContext())
             {
-                user.UserRoleId = 1;
-                user.UserPassword = passwordHasher.HashPassword(user, "123456");
+                var studentRole = db.Roles.Where(r => r.RoleName.ToLower() == "student").FirstOrDefault();
+                if (studentRole != null)
+                {
+                    foreach (var user in students)
+                    {
+                        user.UserRoleId = studentRole.Id;
+                       user.UserPassword = passwordHasher.HashPassword(user, "123456");
+                    }
+                }
             }
             //add to list users
             users.AddRange(students);
@@ -60,10 +68,18 @@ namespace BusinessObject
                     .Generate());
             }
 
-            foreach (var user in teachers)
+            //get id of student role from database and set to user
+            using (var db = new AMSContext())
             {
-                user.UserRoleId = 2;
-                user.UserPassword = passwordHasher.HashPassword(user, "123456");
+                var teacherRole = db.Roles.Where(r => r.RoleName.ToLower() == "teacher").FirstOrDefault();
+                if (teacherRole != null)
+                {
+                    foreach (var user in teachers)
+                    {
+                        user.UserRoleId = teacherRole.Id;
+                        user.UserPassword = passwordHasher.HashPassword(user, "123456");
+                    }
+                }
             }
 
             //add to list users

@@ -9,7 +9,11 @@ namespace Repository
 {
     public interface IClassStudentRepository
     {
+        Task CreateClassStudent(ClassStudent classStudent);
+
         //get all class by user id
         List<Class> GetClassByUserId(int userId);
+        //add class
+        
     }
 }
