@@ -22,5 +22,10 @@ namespace Repository
             //get user by email
             return UserDAO.GetUserByEmail(userEmail);
         }
+
+        public User GetUserById(int userId)
+        {
+            return UserDAO.GetUserById(userId);
+        }
     }
 }

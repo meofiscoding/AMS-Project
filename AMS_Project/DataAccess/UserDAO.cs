@@ -35,5 +35,20 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
+
+        public static User GetUserById(int userId)
+        {
+            try
+            {
+                using (var db = new AMSContext())
+                {
+                    return db.Users.FirstOrDefault(u => u.Id == userId);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }

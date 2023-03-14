@@ -2,19 +2,46 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="dashboard-buttons" style="display: flex;justify-content: center;">
+    <button id="join-class-button" class="btn btn-primary d-none">Join Class</button>
+    <button id="create-class-button" class="btn btn-primary d-none">Create Class</button>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
+    $(document).ready(function() {
+        // Get the token from local storage
+        const token = localStorage.getItem('token');
         //redirect to the login page if the local storage is empty
-        if(localStorage.getItem("token") == null)
+        if(token == null)
         {
             window.location.href = "/Login";
         }
+    // Make the AJAX call to the API
+        $.ajax({
+            url: 'https://localhost:7290/api/ClassStudents',
+            type: 'GET',
+            headers: { 'Authorization': token },
+            success: function(result) {
+            // Display the Join Class or Create Class button based on the user's role
+            if (result.role.toLowerCase() === 'student') {
+                $('#join-class-button').removeClass("d-none");
+            } else if (result.RoletoLowerCase() === 'teacher') {
+                $('#create-class-button').removeClass("d-none");
+            }
+
+            // Display the classes
+            result.classes.forEach(function(cls) {
+                const listItem = $('<li>').text(cls.Name);
+                $('#class-list').append(listItem);
+            });
+            },
+            error: function(xhr, status, error) {
+              alert(xhr.responseText);
+            }
+        });
+});
 
     </script>
 }

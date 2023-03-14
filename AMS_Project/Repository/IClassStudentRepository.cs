@@ -7,11 +7,9 @@ using BusinessObject.DataAccess;
 
 namespace Repository
 {
-    public interface IUserRepository
+    public interface IClassStudentRepository
     {
-        //Add user
-        void AddUser(User user);
-        User GetUserByEmail(string userEmail);
-        User GetUserById(int userId);
+        //get all class by user id
+        List<ClassStudent> GetClassByUserId(int userId);
     }
 }
