@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessObject.DataAccess;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AMSClient.Controllers
 {
@@ -6,6 +7,8 @@ namespace AMSClient.Controllers
     {
         public IActionResult Index()
         {
+            //get all roles from AMSContext and store in viewbag
+            ViewBag.Roles = new AMSContext().Roles.ToList();
             return View();
         }
     }
