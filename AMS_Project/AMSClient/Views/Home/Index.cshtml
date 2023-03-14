@@ -11,12 +11,14 @@
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
     $(document).ready(function() {
+        debugger;
         // Get the token from local storage
         const token = localStorage.getItem('token');
         //redirect to the login page if the local storage is empty
         if(token == null)
         {
             window.location.href = "/Login";
+            return;
         }
     // Make the AJAX call to the API
         $.ajax({
@@ -27,7 +29,7 @@
             // Display the Join Class or Create Class button based on the user's role
             if (result.role.toLowerCase() === 'student') {
                 $('#join-class-button').removeClass("d-none");
-            } else if (result.RoletoLowerCase() === 'teacher') {
+            } else if (result.role.toLowerCase() === 'teacher') {
                 $('#create-class-button').removeClass("d-none");
             }
 

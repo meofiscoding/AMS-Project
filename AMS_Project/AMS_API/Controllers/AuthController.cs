@@ -107,5 +107,13 @@ namespace AMS_API.Controllers
             return Ok(new { token = tokenString });
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("Authentication");
+            return Ok();
+        }
+
     }
 }

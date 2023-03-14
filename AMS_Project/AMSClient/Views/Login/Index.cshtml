@@ -43,6 +43,8 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script type="text/javascript">
+     $(document).ready(function() {
+    debugger;
     //check if token is it localStorage
     if(localStorage.getItem("token") != null) {
          window.location.href = "/Home";
@@ -72,5 +74,6 @@
         }
                     })
         });
+     });
     </script>
 }
