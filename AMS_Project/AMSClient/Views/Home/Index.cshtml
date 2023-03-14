@@ -4,46 +4,130 @@
 
 <div id="dashboard-buttons" style="display: flex;justify-content: center;">
     <button id="join-class-button" class="btn btn-primary d-none">Join Class</button>
-    <button id="create-class-button" class="btn btn-primary d-none">Create Class</button>
+    <button id="create-class-button" class="btn btn-primary d-none" data-toggle="modal" data-target="#exampleModal">Create Class</button>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script type="text/javascript">
-    $(document).ready(function() {
-        debugger;
-        // Get the token from local storage
-        const token = localStorage.getItem('token');
-        //redirect to the login page if the local storage is empty
-        if(token == null)
-        {
-            window.location.href = "/Login";
-            return;
-        }
-    // Make the AJAX call to the API
-        $.ajax({
-            url: 'https://localhost:7290/api/ClassStudents',
-            type: 'GET',
-            headers: { 'Authorization': token },
-            success: function(result) {
-            // Display the Join Class or Create Class button based on the user's role
-            if (result.role.toLowerCase() === 'student') {
-                $('#join-class-button').removeClass("d-none");
-            } else if (result.role.toLowerCase() === 'teacher') {
-                $('#create-class-button').removeClass("d-none");
+@* modal create class*@
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Class</h5>
+                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-class-form">
+                    <div class="form-group">
+                        <label for="class-name" class="col-form-label">Class Name:</label>
+                        <input type="text" class="form-control" name="classname" id="class-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-description" class="col-form-label">Class Description:</label>
+                        <textarea class="form-control" id="class-description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submit-create-class">Create Class</button>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+        <script type="text/javascript">
+     $(document).ready(function() {
+            debugger;
+            // Get the token from local storage
+            const token = localStorage.getItem('token');
+            // Decode the token to get the expiration time
+            const decodedToken = jwt_decode(token);
+            // Check if the token has expired
+            const expirationTime = decodedToken.exp;
+            //redirect to the login page if the local storage is empty
+            if(token == null)
+            {
+                window.location.href = "/Login";
+                return;
             }
 
-            // Display the classes
-            result.classes.forEach(function(cls) {
-                const listItem = $('<li>').text(cls.Name);
-                $('#class-list').append(listItem);
+            if (Date.now() >= expirationTime * 1000) {
+                 // Prompt the user to log in again
+              alert('Your session has expired. Please log in again.');
+            } else {
+                
+                $("#create-class-form").validate({
+                    rules:{
+                        classname:{
+                            required:true,
+                        }        
+                    }
+                });
+
+              $('#create-class-button').click(function() {
+                 //show modal
+                     $('#exampleModal').modal('show');
+              });
+           // Make the AJAX call to the API to load class Students
+            $.ajax({
+                url: 'https://localhost:7290/api/ClassStudents',
+                type: 'GET',
+                headers: { 'Authorization': token },
+                success: function(result) {
+                // Display the Join Class or Create Class button based on the user's role
+                if (result.role.toLowerCase() === 'student') {
+                    $('#join-class-button').removeClass("d-none");
+                } else if (result.role.toLowerCase() === 'teacher') {
+                    $('#create-class-button').removeClass("d-none");
+                }
+
+                // Display the classes
+                result.classes.forEach(function(cls) {
+                    const listItem = $('<li>').text(cls.Name);
+                    $('#class-list').append(listItem);
+                });
+                },
+                error: function(xhr, status, error) {
+                  alert(xhr.responseText);
+                }
             });
-            },
-            error: function(xhr, status, error) {
-              alert(xhr.responseText);
-            }
-        });
-});
 
-    </script>
+                $('#submit-create-class').click(function(event) {
+                    event.preventDefault();
+                    //validate the form
+                    if (!$("#create-class-form").valid()) {
+                        return;
+                    }
+                    //generate random class code with 4 digit
+                    var classCode = Math.floor(1000 + Math.random() * 9000);
+
+                    // Make the AJAX call to create the class
+                    $.ajax({
+                    url: 'https://localhost:7290/api/classes',
+                    method: 'POST',
+                    data: JSON.stringify({
+                        ClassName:  $('#class-name').val(),
+                        ClassDescription:$('#class-description').val(),
+                        ClassCode: classCode.toString(),
+                        ClassStatus: 1,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                    },
+                    success: function(result) {
+                        // Handle the success response
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle the error response
+                    },
+            });
+        });
+     }
+    });
+
+        </script>
 }

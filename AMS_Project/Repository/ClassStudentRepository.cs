@@ -10,7 +10,7 @@ namespace Repository
 {
     public class ClassStudentRepository : IClassStudentRepository
     {
-        public List<ClassStudent> GetClassByUserId(int userId)
+        public List<Class> GetClassByUserId(int userId)
         {
             return ClassStudentDAO.GetClassByUserId(userId);
         }

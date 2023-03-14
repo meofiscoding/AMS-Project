@@ -10,12 +10,14 @@ namespace DataAccess
     public static class ClassStudentDAO
     {
         //get all class by user id
-        public static List<ClassStudent> GetClassByUserId(int userId)
+        public static List<Class> GetClassByUserId(int userId)
         {
             using (var context = new AMSContext())
             {
-                var classStudents = context.ClassStudents.Where(x => x.IdStudent == userId).ToList();
-                return classStudents;
+                //get all class by user id
+                var classStudents = context.ClassStudents.Where(cs => cs.IdStudent == userId).ToList();
+                //get classid of each classStudent and reuturn list of class that match classid
+                return classStudents.Select(cs => context.Classes.FirstOrDefault(c => c.Id == cs.IdClass)).ToList();
             }
         }
     }

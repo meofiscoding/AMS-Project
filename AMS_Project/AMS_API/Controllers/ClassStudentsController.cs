@@ -16,8 +16,8 @@ namespace AMS_API.Controllers
     public class ClassStudentsController : ControllerBase
     {
         private readonly IClassStudentRepository _classStudentRepository;
-        private IUserRepository _userRepository;
-        private IRoleRepository _roleRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
 
         public ClassStudentsController(IClassStudentRepository classStudentRepository, IUserRepository userRepository, IRoleRepository roleRepository)
         {

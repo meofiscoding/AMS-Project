@@ -96,8 +96,14 @@ namespace AMS_API.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.UserEmail),
-                    new Claim(ClaimTypes.Role, role.RoleName)
+                    new Claim(ClaimTypes.Role, role.RoleName),
+                    new Claim("FullName", user.FullName),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserEmail),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Aud, _configuration["Jwt:Audience"]),
+                    new Claim(JwtRegisteredClaimNames.Iss, _configuration["Jwt:Issuer"])
                 }),
+                Audience = _configuration["Jwt:Audience"],
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

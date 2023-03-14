@@ -10,6 +10,6 @@ namespace Repository
     public interface IClassStudentRepository
     {
         //get all class by user id
-        List<ClassStudent> GetClassByUserId(int userId);
+        List<Class> GetClassByUserId(int userId);
     }
 }

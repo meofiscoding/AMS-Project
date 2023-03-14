@@ -18,7 +18,11 @@ var jwtIssuer = configuration["Jwt:Issuer"];
 var jwtAudience = configuration["Jwt:Audience"];
 
 // Add authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -41,6 +45,7 @@ builder.Services.AddDbContext<AMSContext>(options =>
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IRoleRepository,RoleRepository>();
 builder.Services.AddScoped<IClassStudentRepository,ClassStudentRepository>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddCors();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
