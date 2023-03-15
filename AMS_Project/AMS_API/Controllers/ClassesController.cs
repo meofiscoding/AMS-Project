@@ -50,19 +50,19 @@ namespace AMS_API.Controllers
             return CreatedAtAction("PostClass", new { id = @class.Id }, @class);
         }
 
-        //// GET: api/Classes/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Class>> GetClass(int id)
-        //{
-        //    var @class = await _context.Classes.FindAsync(id);
+        // GET: api/Classes/5
+        [HttpGet("{classId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Class>> GetClass(int classId)
+        {
+            var @class = await _classRepository.GetClassById(classId);
 
-        //    if (@class == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return @class;
-        //}
+            if (@class == null)
+            {
+                return BadRequest("Class not found");
+            }
+            return Ok(@class);
+        }
 
         // PUT: api/Classes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

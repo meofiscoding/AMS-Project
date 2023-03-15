@@ -18,5 +18,14 @@ namespace DataAccess
                 await context.SaveChangesAsync();
             }
         }
+
+        //get class by id
+        public static async Task<Class> GetClassById(int id)
+        {
+            using (var context = new AMSContext())
+            {
+                return await context.Classes.FindAsync(id);
+            }
+        }
     }
 }

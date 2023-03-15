@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewData["Title"] = "Class Detail";
+}
+ <style>
+        /* Overall styles */
+        body {
+            font-family: sans-serif;
+        }
+        
+        /* Tab styles */
+        .tabview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 0 30px;
+        }
+        .tabview button {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #777;
+            transition: color 0.2s ease-in-out;
+        }
+        .tabview button.active {
+            color: #000;
+            border-bottom: 3px solid #000;
+        }
+        
+        /* Content styles */
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border-top: 2px solid #aca4a4;
+        }
+        .tabcontent.active {
+            display: block;
+        }
+    </style>
+    <div class="tabview">
+        <h4 class ="class title">Class Title</h4>
+        <button class="tablinks active" >Tab 1</button>
+        <button class="tablinks" >Tab 2</button>
+        <button class="tablinks" >Tab 3</button>
+    </div>
+    
+    <div id="tab1" class="tabcontent active">
+        <h2>Tab 1 Content</h2>
+        <p>This is the content of tab 1. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at velit eget nunc iaculis ullamcorper.</p>
+    </div>
+    
+    <div id="tab2" class="tabcontent">
+        <h2>Tab 2 Content</h2>
+        <p>This is the content of tab 2. Ut sed lorem odio. Mauris at facilisis eros. Praesent a felis vel dolor fringilla egestas. Aliquam erat volutpat.</p>
+    </div>
+    
+    <div id="tab3" class="tabcontent">
+        <h2>Tab 3 Content</h2>
+        <p>This is the content of tab 3. Curabitur pulvinar quam non nibh tristique, eu sollicitudin est laoreet. Vestibulum venenatis elit quis mi blandit aliquet.</p>
+    </div>
+
+    @section Scripts{
+      <script>
+      // Get all the tabs and the content
+const tabButtons = document.querySelectorAll(".tablinks");
+const tabContents = document.querySelectorAll(".tabcontent");
+
+  function showTab(tabIndex) {
+    // Hide all tab contents
+    tabContents.forEach((content) => {
+      content.style.display = "none";
+    });
+
+    // Remove active class from all tab buttons
+    tabButtons.forEach((button) => {
+      button.classList.remove("active");
+    });
+
+    // Show the selected tab content and set the corresponding button as active
+    const selectedTab = tabContents[tabIndex];
+    const selectedButton = tabButtons[tabIndex];
+    selectedTab.style.display = "block";
+    selectedButton.classList.add("active");
+  }
+
+  // Show the first tab by default
+  showTab(0);
+
+  // Add click event listeners to tab buttons
+  tabButtons.forEach((button, index) => {
+    button.addEventListener("click", () => {
+      showTab(index);
+    });
+  });
+
+   $(document).on("click", ".classroom-card-link", function(e){
+                        e.preventDefault();
+                        debugger;
+                        //get classId from id attribute
+                        var classId = $(this).attr('id');
+
+                        //make an ajax call
+                        $.ajax({
+                            url: 'https://localhost:7290/api/ClassStudents/' + classId,
+                            type: 'GET',
+                            headers: { 'Authorization': 'Bearer ' + token },
+                            success: function (data) {
+                                //go to class page
+                                window.location.href = "/ClassStudents?classId=" + classId;
+                            },
+                            error: function (xhr, status, error) {
+                                alert(xhr.responseText);
+                            }
+                        })
+                    })
+
+      </script>
+    }

@@ -8,9 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using BusinessObject.DataAccess;
 using Repository;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AMS_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ClassStudentsController : ControllerBase
@@ -27,17 +32,19 @@ namespace AMS_API.Controllers
         }
 
         // GET: api/ClassStudents
+        //get all class that belong to that user id
         [HttpGet]
-        public IActionResult GetClassStudents([FromHeader(Name = "Authorization")] string token)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult GetClassStudents()
         {
-            var userEmail = GetUserIdFromToken(token);
+            var userId = GetUserId();
 
-            if (userEmail == null)
+            if (userId == 0)
             {
                 return BadRequest("Invalid user email");
             }
 
-            var user = _userRepository.GetUserByEmail(userEmail);
+            var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
                 return BadRequest("User not found");
@@ -56,32 +63,38 @@ namespace AMS_API.Controllers
             }
         }
 
-        private string GetUserIdFromToken(string token)
+        //get user id from token
+        private int GetUserId()
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtToken = tokenHandler.ReadJwtToken(token);
-
-            if (jwtToken == null || jwtToken.Payload == null)
-            {
-                throw new ArgumentException("Invalid JWT token");
-            }
-
-            var claims = jwtToken.Payload.Claims;
-
-            if (claims == null)
-            {
-                throw new ArgumentException("JWT token does not contain any claims");
-            }
-
-            var userNameClaim = claims.FirstOrDefault(c => c.Type == "unique_name");
-
-            if (userNameClaim == null || string.IsNullOrEmpty(userNameClaim.Value))
-            {
-                throw new ArgumentException("JWT token does not contain a valid user email");
-            }
-
-            return userNameClaim.Value;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var userIdClaim = identity?.Claims.FirstOrDefault(c => c.Type == "ID");
+            return int.Parse(userIdClaim.Value);
         }
 
+        // GET: api/ClassStudents/5
+        [HttpGet("{classId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<ClassStudent>> GetClassStudent(int classId)
+        {
+            List<User> classStudent = await _classStudentRepository.GetClassStudent(classId);
+
+            //get user id from token
+            var userId = GetUserId();
+
+             // Check if the user is enrolled in the class
+            if (!classStudent.Any(x => x.Id == userId))
+            {
+                return Forbid("You are not enrolled in this class");
+            }
+
+            //assign role for each student in classStudent in UserRole field
+            foreach (var student in classStudent)
+            {
+                var userRole = _roleRepository.GetRole(student.UserRoleId.Value);
+                student.UserRole = userRole;
+            }
+
+            return Ok(classStudent);
+        }
     }
 }

@@ -13,7 +13,8 @@ namespace Repository
 
         //get all class by user id
         List<Class> GetClassByUserId(int userId);
+        Task<List<User>> GetClassStudent(int classId);
         //add class
-        
+
     }
 }

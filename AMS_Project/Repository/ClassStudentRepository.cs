@@ -20,5 +20,10 @@ namespace Repository
         {
             return ClassStudentDAO.GetClassByUserId(userId);
         }
+
+        public Task<List<User>> GetClassStudent(int classId)
+        {
+            return ClassStudentDAO.GetClassStudent(classId);
+        }
     }
 }
