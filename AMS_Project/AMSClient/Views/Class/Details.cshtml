@@ -54,6 +54,26 @@
         .tabcontent.active {
             display: block;
         }
+
+  /* Search Result */
+  #search-result {
+    list-style: none;
+    padding: 0;
+  }
+
+  #search-result li {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+  }
+
+  #search-result li img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+  }
+
 </style>
 <div class="tabview">
     <strong class="class-title" style="font-size: xx-large;"></strong>
@@ -76,7 +96,7 @@
         </ul>
         <div style="display: flex; justify-content: space-between; align-items: center;">
              <h3 style=" color: #0a5e15;">Students</h3>
-            <strong class="add-student">Add Student <i class="fa-solid fa-user-plus"></i></strong>
+            <strong class="add-student" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Student <i class="fa-solid fa-user-plus"></i></strong>
         </div>
         <ul id="student-list" >
             <!-- The list of students will be dynamically generated here -->
@@ -84,8 +104,33 @@
     </div>
 </div>
 
+<!-- Bootstrap modal which has an input search and a button invite-->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
+        </div>
+        <div class="search-results">
+          <!-- Search results will go here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Invite</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
+        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <script>
   $(document).ready(function() {
             debugger;
@@ -209,7 +254,51 @@
                 error: function (xhr, status, error) {
                     alert(xhr.responseText);
                 }
-            })
+            });
+
+            $("#search-input").autocomplete({
+                source: function(request, response) {
+                    debugger;
+                // Make an AJAX call to your server to get a list of matching students based on the search term
+                $.ajax({
+                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
+                    type: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    data: { search: request.term },
+                    success: function (data) {
+                        //get data element that has data.userRole.roleName = "student"
+                        var studentList = data.filter(function (item) {
+                            return item.userRole.roleName.toLowerCase() == "student";
+                        });
+                        //looping through studentList and append to student-list
+                        for (var i = 0; i < studentList.length; i++) {
+                            var student = studentList[i];
+                            var html = `<div id="user-item-template">
+                                        <li>
+                                            <input type="checkbox" class="user-checkbox" id=${student.id}>
+                                            <span class="user-name">${student.fullName}</span>
+                                        </li>
+                                    </div>`
+                            //append html to student-list
+                            $("#search-result").append(html);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                })
+                // Return the list of matching students as an array
+                },
+                minLength: 2, // Minimum number of characters required to trigger autocomplete
+                select: function(event, ui) {
+                // Handle the selection of a student from the autocomplete dropdown
+
+                },
+                focus: function(event, ui) {
+                // Handle the focus event when a student is highlighted in the autocomplete dropdown
+                }
+            });
+
 
         }
 

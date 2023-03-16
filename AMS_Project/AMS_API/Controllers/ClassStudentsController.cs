@@ -68,13 +68,20 @@ namespace AMS_API.Controllers
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             var userIdClaim = identity?.Claims.FirstOrDefault(c => c.Type == "ID");
-            return int.Parse(userIdClaim.Value);
+            if(userIdClaim == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return int.Parse(userIdClaim.Value);
+            }
         }
 
         // GET: api/ClassStudents/5
         [HttpGet("{classId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<ClassStudent>> GetClassStudent(int classId)
+        public async Task<ActionResult<ClassStudent>> GetClassStudent(int classId, string? search)
         {
             List<User> classStudent = await _classStudentRepository.GetClassStudent(classId);
 
@@ -94,7 +101,14 @@ namespace AMS_API.Controllers
                 student.UserRole = userRole;
             }
 
+            if(search != "" &&  search != null)
+            {
+                //get all user in class that has email contains search string
+                classStudent = classStudent.Where(x => x.UserEmail.Contains(search)).ToList();
+            }
+
             return Ok(classStudent);
         }
+
     }
 }

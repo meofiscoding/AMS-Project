@@ -247,7 +247,7 @@
                         <div class="classroom-card-header">
                             <div class="classroom-card-icon"><i class="fa fa-chalkboard"></i></div>
                             <div class="classroom-card-title">
-                                <a class="classroom-card-link" href="/Class/Details/${result.id}">${result.className}</h2>
+                                <a class="classroom-card-link" href="/Class/Details/${result.id}">${result.className}</a>
                                 <p>Class Code: ${result.classCode}</p>
                                 <p>Created Date: ${convertDate(result.createAt)}</p>
                                 <span class="badge badge-${result.classStatus == 1?'success':'danger'}" id="status-active">${result.classStatus == 1?'Active':'Stopped'}</span>
