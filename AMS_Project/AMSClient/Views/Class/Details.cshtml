@@ -29,8 +29,9 @@
         }
 
             .tabview button.active {
-                color: #000;
-                border-bottom: 3px solid #000;
+                color: #6d97cf;
+                border-bottom: 3px solid #1b6796;
+                font-size: large;
             }
     li{
         list-style-type: none;
@@ -72,6 +73,7 @@
     <button class="tablinks active">Stream</button>
     <button class="tablinks">Assignment</button>
     <button class="tablinks">People</button>
+    <button class="tablinks">Groups</button>
 </div>
 
 <div id="tab1" class="tabcontent active">
@@ -94,6 +96,10 @@
             <!-- The list of students will be dynamically generated here -->
         </ul>
     </div>
+</div>
+
+<div id="tab4" class="tabcontent">
+
 </div>
 
 <!-- Bootstrap modal which has an input search and a button invite-->
@@ -165,58 +171,60 @@
             const selectedButton = tabButtons[tabIndex];
             
         if(tabIndex == 2){
-            //call ajax to get data
-            $.ajax({
-                url: 'https://localhost:7290/api/ClassStudents/' + classId,
-                type: 'GET',
-                headers: { 'Authorization': 'Bearer ' + token },
-                success: function (data) {
-                    //get data element that has data.userRole.roleName = "student"
-                    var studentList = data.filter(function (item) {
-                        return item.userRole.roleName.toLowerCase() == "student";
-                    });
-                     //get first data element that has data.userRole.roleName = "teacher"
-                    var teacherList = data.filter(function (item) {
-                        return item.userRole.roleName.toLowerCase() == "teacher";
-                    });
-                    //remove duplicates in teacherList
-                    teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
+            if($("#student-list").children().length == 0 && $("#teacher-list").children().length == 0){
+                 //call ajax to get data
+                 $.ajax({
+                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
+                    type: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    success: function (data) {
+                        //get data element that has data.userRole.roleName = "student"
+                        var studentList = data.filter(function (item) {
+                            return item.userRole.roleName.toLowerCase() == "student";
+                        });
+                        //get first data element that has data.userRole.roleName = "teacher"
+                        var teacherList = data.filter(function (item) {
+                            return item.userRole.roleName.toLowerCase() == "teacher";
+                        });
+                        //remove duplicates in teacherList
+                        teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
 
-                    if(studentList.length == 0)
-                    {
-                        $("#student-list").append("<li>No student in this class</li>");
-                    }else{
-                        //looping through studentList and append to student-list
-                        for (var i = 0; i < studentList.length; i++) {
-                            var student = studentList[i];
+                        if(studentList.length == 0)
+                        {
+                            $("#student-list").append("<li>No student in this class</li>");
+                        }else{
+                            //looping through studentList and append to student-list
+                            for (var i = 0; i < studentList.length; i++) {
+                                var student = studentList[i];
+                                var html = `<div id="user-item-template">
+                                            <li>
+                                                <input type="checkbox" class="user-checkbox" id=${student.id}>
+                                                <span class="user-name">${student.fullName}</span>
+                                            </li>
+                                        </div>`
+                                //append html to student-list
+                                $("#student-list").append(html);
+                            }
+                        }
+                    
+                        //looping through teacherList and append to teacher-list
+                        for (var i = 0; i < teacherList.length; i++) {
+                            var teacher = teacherList[i];
                             var html = `<div id="user-item-template">
                                         <li>
-                                            <input type="checkbox" class="user-checkbox" id=${student.id}>
-                                            <span class="user-name">${student.fullName}</span>
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                            <a class="teacher-name">${teacher.fullName}</a>
                                         </li>
                                     </div>`
-                            //append html to student-list
-                            $("#student-list").append(html);
+                            //append html to teacher-list
+                            $("#teacher-list").append(html);
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
                     }
-                   
-                    //looping through teacherList and append to teacher-list
-                    for (var i = 0; i < teacherList.length; i++) {
-                        var teacher = teacherList[i];
-                        var html = `<div id="user-item-template">
-                                    <li>
-                                       <i class="fa-solid fa-graduation-cap"></i>
-                                        <a class="teacher-name">${teacher.fullName}</a>
-                                    </li>
-                                </div>`
-                        //append html to teacher-list
-                        $("#teacher-list").append(html);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            })
+                })
+            }     
         }
            
 
