@@ -67,16 +67,82 @@
             overflow-y: auto;
         }
 
+        .hero-element{
+                background-color: #a2c9df;
+                padding: 20px;
+                color: white;
+                border-radius: 10px;
+                height: 200px
+        }
+        .input-container{
+            padding: 20px;
+            border: 1px solid #b3a6a6;
+            border-radius: 10px;
+        }
+
+        textarea:focus {
+            outline: none !important;
+            box-shadow: none !important;
+            border-color: #ced4da;
+        }
+
+        .up-coming{
+                border: 1px solid #b3a6a6;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+        }
+
+        .file-attach{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-group{
+            border-radius: 10px !important;
+        }
+
 </style>
 <div class="tabview">
     <strong class="class-title" style="font-size: xx-large;"></strong>
-    <button class="tablinks active">Stream</button>
-    <button class="tablinks">Assignment</button>
+    <button class="tablinks active">Class Work</button>
+    <button class="tablinks">Submission</button>
     <button class="tablinks">People</button>
     <button class="tablinks">Groups</button>
 </div>
 
 <div id="tab1" class="tabcontent active">
+     <div class="hero-element">
+    <h1 id="stream-classname"></h1>
+    <p id="stream-classcode"></p>
+  </div>
+  <div class="container mt-3">
+      <div class="row col-md-12">
+        <div class="col-md-3 up-coming">
+            <strong>Nothing due in this week!!</strong>
+        </div>
+       <div class="col-md-9">
+            <div class="input-communication">
+                <div class="input-group mb-3 input-container">
+                       <i class="fa-solid fa-circle-user fa-2x" style="margin-right:20px"></i>
+                        <textarea id="post-input" class="form-control" placeholder="Write something to class..." aria-label="Write something..." aria-describedby="basic-addon1" style="border:none" rows="1"></textarea>
+                   <div class="input-group my-3 file-attach">
+                    <div class="attach-icon">
+                        @* button with icon *@
+                        <button class="btn btn-primary" type="button" id="upload-button">
+                            <i class="fa-solid fa-paperclip"></i> Add file
+                            <input type="file" class="file-input" id="upload-input" style="display:none;">
+                        </button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+                </div>
+            </div>
+      </div>
+      </div>
+  </div>
  </div>
 
 <div id="tab2" class="tabcontent">
@@ -112,7 +178,7 @@
       </div>
       <div class="modal-body">
         <div class="input-group mb-3">
-          <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
+            <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
         </div>
       </div>
       <div class="modal-footer">
@@ -149,211 +215,232 @@
                  // Prompt the user to log in again
               alert('Your session has expired. Please log in again.');
             } else {
-                 // Get all the tabs and the content
-        const tabButtons = document.querySelectorAll(".tablinks");
-        const tabContents = document.querySelectorAll(".tabcontent");
-        var url = window.location.href;
-        const classId = url.substring(url.lastIndexOf('/') + 1);
-
-        function showTab(tabIndex) {
-            // Hide all tab contents
-            tabContents.forEach((content) => {
-                content.style.display = "none";
-            });
-
-            // Remove active class from all tab buttons
-            tabButtons.forEach((button) => {
-                button.classList.remove("active");
-            });
-
-            // Show the selected tab content and set the corresponding button as active
-            const selectedTab = tabContents[tabIndex];
-            const selectedButton = tabButtons[tabIndex];
-            
-        if(tabIndex == 2){
-            if($("#student-list").children().length == 0 && $("#teacher-list").children().length == 0){
-                 //call ajax to get data
-                 $.ajax({
-                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
-                    type: 'GET',
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    success: function (data) {
-                        //get data element that has data.userRole.roleName = "student"
-                        var studentList = data.filter(function (item) {
-                            return item.userRole.roleName.toLowerCase() == "student";
-                        });
-                        //get first data element that has data.userRole.roleName = "teacher"
-                        var teacherList = data.filter(function (item) {
-                            return item.userRole.roleName.toLowerCase() == "teacher";
-                        });
-                        //remove duplicates in teacherList
-                        teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
-
-                        if(studentList.length == 0)
-                        {
-                            $("#student-list").append("<li>No student in this class</li>");
-                        }else{
-                            //looping through studentList and append to student-list
-                            for (var i = 0; i < studentList.length; i++) {
-                                var student = studentList[i];
-                                var html = `<div id="user-item-template">
-                                            <li>
-                                                <input type="checkbox" class="user-checkbox" id=${student.id}>
-                                                <span class="user-name">${student.fullName}</span>
-                                            </li>
-                                        </div>`
-                                //append html to student-list
-                                $("#student-list").append(html);
-                            }
-                        }
-                    
-                        //looping through teacherList and append to teacher-list
-                        for (var i = 0; i < teacherList.length; i++) {
-                            var teacher = teacherList[i];
-                            var html = `<div id="user-item-template">
-                                        <li>
-                                        <i class="fa-solid fa-graduation-cap"></i>
-                                            <a class="teacher-name">${teacher.fullName}</a>
-                                        </li>
-                                    </div>`
-                            //append html to teacher-list
-                            $("#teacher-list").append(html);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        alert(xhr.responseText);
-                    }
-                })
-            }     
-        }
-           
-
-            selectedTab.style.display = "block";
-            selectedButton.classList.add("active");
-        }
-
-        // Show the first tab by default
-        showTab(0);
-
-        // Add click event listeners to tab buttons
-        tabButtons.forEach((button, index) => {
-            button.addEventListener("click", () => {
-                showTab(index);
-            });
-        });
-
-            //make an ajax call
-            $.ajax({
-                url: 'https://localhost:7290/api/Classes/' + classId,
-                type: 'GET',
-                headers: { 'Authorization': 'Bearer ' + token },
-                success: function (data) {
-                    //set class-title html is class name
-                    $(".class-title").html(data.className);
-                },
-                error: function (xhr, status, error) {
-                    alert(xhr.responseText);
-                }
-            });
-
-            var allSelectted = "";
-            var listSelected = [];
-            function extractLast(term) {
-                //check if term contain ","
-                if (term.indexOf(",") == -1) {
-                    return term;
-                }else{
-                    return term.split(',').pop().trim();
-                }
-            }
-
-            $("#search-input").autocomplete({
-                source: function(request, response) {
-                    var term = extractLast(request.term)
-                    debugger;
-                // Make an AJAX call to your server to get a list of matching students based on the search term
-                $.ajax({
-                    url: 'https://localhost:7290/api/Users',
-                    type: 'GET',
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    data: { search: term },
-                    success: function (data) {
-                        //get data element that has data.userRole.roleName = "student"
-                        var studentList = data.filter(function (item) {
-                            return item.userRole.roleName.toLowerCase() == "student";
-                        });
-
-                        //remove element in studentList if it is in listSelected
-                        for (var i = 0; i < listSelected.length; i++) {
-                            var selected = listSelected[i];
-                            studentList = studentList.filter(function (item) {
-                                return item.id != selected;
-                            });
-                        }
-                         // Map the array of student objects to an array of label/value pairs
-                        var results = studentList.map(function(student) {
-                        return {
-                            label: student.userEmail,
-                            value: student.id
-                        };
+                    document.getElementById("upload-button").addEventListener("click", function() {
+                          document.getElementById("upload-input").click();
                     });
-                        response(results);                        
-                    },
-                    error: function (xhr, status, error) {
-                        alert(xhr.responseText);
-                    }
-                })
-                // Return the list of matching students as an array
-                },
-                minLength: 2, 
-                multiple: true, // Enable multiple select
-                select: function(event, ui) {
-                    //append ui.item.value to allSelectted
-                    allSelectted += ui.item.label + ", ";
-                    listSelected.push(ui.item.value);
-                    $(this).val(allSelectted);
-                    return false;
-                },
-                focus: function(event, ui) {
-                // Handle the focus event when a student is highlighted in the autocomplete dropdown
-                
-                }
-            });
 
-            //each time user delete a character in search-input
-            $("#search-input").on("keydown", function (event) {
-                //check if user press backspace
-                if (event.keyCode == 8) {
-                    //get the last character in allSelectted
-                    var lastChar = allSelectted[allSelectted.length - 1];
-                    //check if lastChar is ","
-                    if (lastChar == ",") {
-                        //remove the last character in allSelectted
-                        allSelectted = allSelectted.substring(0, allSelectted.length - 1);
-                        //remove the last element in listSelected
-                        listSelected.pop();
-                    }
-                }
-            });
+                    document.getElementById("upload-input").addEventListener("change", function() {
+                         console.log(this.files[0]); // do something with the selected file
+                    });
+                   const postInput = document.getElementById("post-input");
+                        // Add event listener to input
+                        postInput.addEventListener("click", () => {
+                    postInput.rows = 5; // Increase rows to 5
+                  });
 
-            //onClick in #addToClass
-            $("#addToClass").click(function(){
-                //call api to add user to class using listSelected
-                $.ajax({
-                    url: 'https://localhost:7290/api/ClassStudents/'+classId+'/students',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    headers: { 'Authorization': 'Bearer ' + token },
-                    data: JSON.stringify (listSelected ),
-                    success: function (data) {
-                        alert(data);
-                        location.reload();
-                    },
-                    error: function (xhr, status, error) {
-                        alert(xhr.responseText);
-                    }
-                })
-            })
+                    // Add event listener to document
+                    document.addEventListener("click", (event) => {
+                        if (!postInput.contains(event.target)) {
+                            postInput.rows = 1; // Reduce rows to 1
+                        }
+                   });
+                    // Get all the tabs and the content
+                    const tabButtons = document.querySelectorAll(".tablinks");
+                    const tabContents = document.querySelectorAll(".tabcontent");
+                    var url = window.location.href;
+                    const classId = url.substring(url.lastIndexOf('/') + 1);
+
+                    function showTab(tabIndex) {
+                        // Hide all tab contents
+                        tabContents.forEach((content) => {
+                            content.style.display = "none";
+                        });
+
+                        // Remove active class from all tab buttons
+                        tabButtons.forEach((button) => {
+                            button.classList.remove("active");
+                        });
+
+                        // Show the selected tab content and set the corresponding button as active
+                        const selectedTab = tabContents[tabIndex];
+                        const selectedButton = tabButtons[tabIndex];
+            
+                        if(tabIndex == 2){
+                            if($("#student-list").children().length == 0 && $("#teacher-list").children().length == 0){
+                                //call ajax to get data
+                                $.ajax({
+                                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
+                                    type: 'GET',
+                                    headers: { 'Authorization': 'Bearer ' + token },
+                                    success: function (data) {
+                                        //get data element that has data.userRole.roleName = "student"
+                                        var studentList = data.filter(function (item) {
+                                            return item.userRole.roleName.toLowerCase() == "student";
+                                        });
+                                        //get first data element that has data.userRole.roleName = "teacher"
+                                        var teacherList = data.filter(function (item) {
+                                            return item.userRole.roleName.toLowerCase() == "teacher";
+                                        });
+                                        //remove duplicates in teacherList
+                                        teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
+
+                                        if(studentList.length == 0)
+                                        {
+                                            $("#student-list").append("<li>No student in this class</li>");
+                                        }else{
+                                            //looping through studentList and append to student-list
+                                            for (var i = 0; i < studentList.length; i++) {
+                                                var student = studentList[i];
+                                                var html = `<div id="user-item-template">
+                                                            <li>
+                                                                <input type="checkbox" class="user-checkbox" id=${student.id}>
+                                                                <span class="user-name">${student.fullName}</span>
+                                                            </li>
+                                                        </div>`
+                                                //append html to student-list
+                                                $("#student-list").append(html);
+                                            }
+                                        }
+                                    
+                                        //looping through teacherList and append to teacher-list
+                                        for (var i = 0; i < teacherList.length; i++) {
+                                            var teacher = teacherList[i];
+                                            var html = `<div id="user-item-template">
+                                                        <li>
+                                                        <i class="fa-solid fa-graduation-cap"></i>
+                                                            <a class="teacher-name">${teacher.fullName}</a>
+                                                        </li>
+                                                    </div>`
+                                            //append html to teacher-list
+                                            $("#teacher-list").append(html);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        alert(xhr.responseText);
+                                    }
+                                })
+                            }     
+                        }
+                        
+
+                            selectedTab.style.display = "block";
+                            selectedButton.classList.add("active");
+                        }
+
+                        // Show the first tab by default
+                        showTab(0);
+
+                        // Add click event listeners to tab buttons
+                        tabButtons.forEach((button, index) => {
+                            button.addEventListener("click", () => {
+                                showTab(index);
+                            });
+                        });
+
+                            //make an ajax call
+                            $.ajax({
+                                url: 'https://localhost:7290/api/Classes/' + classId,
+                                type: 'GET',
+                                headers: { 'Authorization': 'Bearer ' + token },
+                                success: function (data) {
+                                    //set class-title html is class name
+                                    $(".class-title").html(data.className);
+                                    $("#stream-classname").html(data.className);
+                                    $("#stream-classcode").html("Class Code: "+ data.classCode);
+                                },
+                                error: function (xhr, status, error) {
+                                    alert(xhr.responseText);
+                                }
+                            });
+
+                            var allSelectted = "";
+                            var listSelected = [];
+                            function extractLast(term) {
+                                //check if term contain ","
+                                if (term.indexOf(",") == -1) {
+                                    return term;
+                                }else{
+                                    return term.split(',').pop().trim();
+                                }
+                            }
+
+                            $("#search-input").autocomplete({
+                                source: function(request, response) {
+                                    var term = extractLast(request.term)
+                                    debugger;
+                                // Make an AJAX call to your server to get a list of matching students based on the search term
+                                $.ajax({
+                                    url: 'https://localhost:7290/api/Users',
+                                    type: 'GET',
+                                    headers: { 'Authorization': 'Bearer ' + token },
+                                    data: { search: term },
+                                    success: function (data) {
+                                        //get data element that has data.userRole.roleName = "student"
+                                        var studentList = data.filter(function (item) {
+                                            return item.userRole.roleName.toLowerCase() == "student";
+                                        });
+
+                                        //remove element in studentList if it is in listSelected
+                                        for (var i = 0; i < listSelected.length; i++) {
+                                            var selected = listSelected[i];
+                                            studentList = studentList.filter(function (item) {
+                                                return item.id != selected;
+                                            });
+                                        }
+                                        // Map the array of student objects to an array of label/value pairs
+                                        var results = studentList.map(function(student) {
+                                        return {
+                                            label: student.userEmail,
+                                            value: student.id
+                                        };
+                                    });
+                                        response(results);                        
+                                    },
+                                    error: function (xhr, status, error) {
+                                        alert(xhr.responseText);
+                                    }
+                                })
+                                // Return the list of matching students as an array
+                                },
+                                minLength: 2, 
+                                multiple: true, // Enable multiple select
+                                select: function(event, ui) {
+                                    //append ui.item.value to allSelectted
+                                    allSelectted += ui.item.label + ", ";
+                                    listSelected.push(ui.item.value);
+                                    $(this).val(allSelectted);
+                                    return false;
+                                },
+                                focus: function(event, ui) {
+                                // Handle the focus event when a student is highlighted in the autocomplete dropdown
+                                
+                                }
+                            });
+
+                            //each time user delete a character in search-input
+                            $("#search-input").on("keydown", function (event) {
+                                //check if user press backspace
+                                if (event.keyCode == 8) {
+                                    //get the last character in allSelectted
+                                    var lastChar = allSelectted[allSelectted.length - 1];
+                                    //check if lastChar is ","
+                                    if (lastChar == ",") {
+                                        //remove the last character in allSelectted
+                                        allSelectted = allSelectted.substring(0, allSelectted.length - 1);
+                                        //remove the last element in listSelected
+                                        listSelected.pop();
+                                    }
+                                }
+                            });
+
+                            //onClick in #addToClass
+                            $("#addToClass").click(function(){
+                                //call api to add user to class using listSelected
+                                $.ajax({
+                                    url: 'https://localhost:7290/api/ClassStudents/'+classId+'/students',
+                                    type: 'POST',
+                                    contentType: 'application/json',
+                                    headers: { 'Authorization': 'Bearer ' + token },
+                                    data: JSON.stringify (listSelected ),
+                                    success: function (data) {
+                                        alert(data);
+                                        location.reload();
+                                    },
+                                    error: function (xhr, status, error) {
+                                        alert(xhr.responseText);
+                                    }
+                                })
+                            });
         }
   });
     </script>
