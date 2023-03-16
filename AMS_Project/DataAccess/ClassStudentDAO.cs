@@ -41,5 +41,17 @@ namespace DataAccess
                 return Task.FromResult(classStudents.Select(cs => context.Users.FirstOrDefault(u => u.Id == cs.IdStudent)).ToList());
             }
         }
+
+        //check if student is enrolled
+        public static bool CheckIfStudentIsEnrolled(int classId, int item)
+        {
+            using (var context = new AMSContext())
+            {
+                //get all classStudent by classId
+                var classStudents = context.ClassStudents.Where(cs => cs.IdClass == classId).ToList();
+                //get studentid of each classStudent and reuturn list of student that match studentid
+                return classStudents.Any(cs => cs.IdStudent == item);
+            }
+        }
     }
 }

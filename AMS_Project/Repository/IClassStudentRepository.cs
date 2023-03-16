@@ -9,6 +9,8 @@ namespace Repository
 {
     public interface IClassStudentRepository
     {
+        Task AddStudentToClass(int classId, int item);
+        bool CheckIfStudentIsEnrolled(int classId, int item);
         Task CreateClassStudent(ClassStudent classStudent);
 
         //get all class by user id

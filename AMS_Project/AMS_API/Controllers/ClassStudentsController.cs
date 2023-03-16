@@ -104,5 +104,30 @@ namespace AMS_API.Controllers
             return Ok(classStudent);
         }
 
+        // POST: api/ClassStudents/{classId}/students
+        [HttpPost]
+        [Route("{classId}/students")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> AddStudentsToClass(int classId, [FromBody]List<int> userIds)
+        {
+            //retrieves the students from the database based on the list of student IDs
+            foreach (var item in userIds)
+            {
+                var student = _userRepository.GetUserById(item);
+                if (student == null)
+                {
+                    return BadRequest("Student not found");
+                }
+                //check if the student is already enrolled in the class
+                if (_classStudentRepository.CheckIfStudentIsEnrolled(classId, item))
+                {
+                    return BadRequest("Student is already enrolled in this class");
+                }
+
+                //add student to class
+                await _classStudentRepository.AddStudentToClass(classId, item);
+            }
+                return Ok("Student added to class");
+        }
     }
 }

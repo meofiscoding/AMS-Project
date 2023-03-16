@@ -111,7 +111,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Invite</button>
+        <button type="button" class="btn btn-primary" id="addToClass">Add to Class</button>
       </div>
     </div>
   </div>
@@ -248,7 +248,6 @@
 
             var allSelectted = "";
             var listSelected = [];
-
             function extractLast(term) {
                 //check if term contain ","
                 if (term.indexOf(",") == -1) {
@@ -278,14 +277,14 @@
                         for (var i = 0; i < listSelected.length; i++) {
                             var selected = listSelected[i];
                             studentList = studentList.filter(function (item) {
-                                return item.userEmail != selected;
+                                return item.id != selected;
                             });
                         }
                          // Map the array of student objects to an array of label/value pairs
                         var results = studentList.map(function(student) {
                         return {
                             label: student.userEmail,
-                            value: student.userEmail
+                            value: student.id
                         };
                     });
                         response(results);                        
@@ -300,14 +299,8 @@
                 multiple: true, // Enable multiple select
                 select: function(event, ui) {
                     //append ui.item.value to allSelectted
-                    allSelectted += ui.item.value + ", ";
+                    allSelectted += ui.item.label + ", ";
                     listSelected.push(ui.item.value);
-                     // Handle the selection of a student from the autocomplete dropdown
-                    var currentVal = this.value;
-                    var lastChar = currentVal[currentVal.length - 1];
-                    if (lastChar != ",") {
-                        $(this).val(currentVal + ", ");
-                    }
                     $(this).val(allSelectted);
                     return false;
                 },
@@ -317,10 +310,41 @@
                 }
             });
 
+            //each time user delete a character in search-input
+            $("#search-input").on("keydown", function (event) {
+                //check if user press backspace
+                if (event.keyCode == 8) {
+                    //get the last character in allSelectted
+                    var lastChar = allSelectted[allSelectted.length - 1];
+                    //check if lastChar is ","
+                    if (lastChar == ",") {
+                        //remove the last character in allSelectted
+                        allSelectted = allSelectted.substring(0, allSelectted.length - 1);
+                        //remove the last element in listSelected
+                        listSelected.pop();
+                    }
+                }
+            });
 
+            //onClick in #addToClass
+            $("#addToClass").click(function(){
+                //call api to add user to class using listSelected
+                $.ajax({
+                    url: 'https://localhost:7290/api/ClassStudents/'+classId+'/students',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    data: JSON.stringify (listSelected ),
+                    success: function (data) {
+                        alert(data);
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                })
+            })
         }
-
-
   });
     </script>
     }

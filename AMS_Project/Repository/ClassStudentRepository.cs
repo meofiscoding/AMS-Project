@@ -10,6 +10,20 @@ namespace Repository
 {
     public class ClassStudentRepository : IClassStudentRepository
     {
+        public Task AddStudentToClass(int classId, int item)
+        {
+            return ClassStudentDAO.CreateClassStudent(new ClassStudent
+            {
+                IdClass = classId,
+                IdStudent = item
+            });
+        }
+
+        public bool CheckIfStudentIsEnrolled(int classId, int item)
+        {
+            return ClassStudentDAO.CheckIfStudentIsEnrolled(classId, item);
+        }
+
         //create classStudent
         public Task CreateClassStudent(ClassStudent classStudent)
         {
