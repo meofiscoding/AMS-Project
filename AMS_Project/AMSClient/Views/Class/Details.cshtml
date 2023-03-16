@@ -175,10 +175,12 @@
                     var studentList = data.filter(function (item) {
                         return item.userRole.roleName.toLowerCase() == "student";
                     });
-                     //get data element that has data.userRole.roleName = "teacher"
+                     //get first data element that has data.userRole.roleName = "teacher"
                     var teacherList = data.filter(function (item) {
                         return item.userRole.roleName.toLowerCase() == "teacher";
-                    })
+                    });
+                    //remove duplicates in teacherList
+                    teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
 
                     if(studentList.length == 0)
                     {
