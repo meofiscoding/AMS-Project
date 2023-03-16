@@ -81,7 +81,7 @@ namespace AMS_API.Controllers
         // GET: api/ClassStudents/5
         [HttpGet("{classId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<ClassStudent>> GetClassStudent(int classId, string? search)
+        public async Task<ActionResult<ClassStudent>> GetClassStudent(int classId)
         {
             List<User> classStudent = await _classStudentRepository.GetClassStudent(classId);
 
@@ -99,12 +99,6 @@ namespace AMS_API.Controllers
             {
                 var userRole = _roleRepository.GetRole(student.UserRoleId.Value);
                 student.UserRole = userRole;
-            }
-
-            if(search != "" &&  search != null)
-            {
-                //get all user in class that has email contains search string
-                classStudent = classStudent.Where(x => x.UserEmail.Contains(search)).ToList();
             }
 
             return Ok(classStudent);

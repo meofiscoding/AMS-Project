@@ -54,25 +54,17 @@
         .tabcontent.active {
             display: block;
         }
+        .ui-autocomplete {
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
 
-  /* Search Result */
-  #search-result {
-    list-style: none;
-    padding: 0;
-  }
-
-  #search-result li {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-  }
-
-  #search-result li img {
-    width: 30px;
-    height: 30px;
-    margin-right: 10px;
-    border-radius: 50%;
-  }
+        .modal-body {
+            height: 500px;
+            overflow-y: auto;
+        }
 
 </style>
 <div class="tabview">
@@ -106,7 +98,7 @@
 
 <!-- Bootstrap modal which has an input search and a button invite-->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Add Student</h5>
@@ -115,9 +107,6 @@
       <div class="modal-body">
         <div class="input-group mb-3">
           <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
-        </div>
-        <div class="search-results">
-          <!-- Search results will go here -->
         </div>
       </div>
       <div class="modal-footer">
@@ -130,7 +119,8 @@
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
-        <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <script>
   $(document).ready(function() {
             debugger;
@@ -256,32 +246,49 @@
                 }
             });
 
+            var allSelectted = "";
+            var listSelected = [];
+
+            function extractLast(term) {
+                //check if term contain ","
+                if (term.indexOf(",") == -1) {
+                    return term;
+                }else{
+                    return term.split(',').pop().trim();
+                }
+            }
+
             $("#search-input").autocomplete({
                 source: function(request, response) {
+                    var term = extractLast(request.term)
                     debugger;
                 // Make an AJAX call to your server to get a list of matching students based on the search term
                 $.ajax({
-                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
+                    url: 'https://localhost:7290/api/Users',
                     type: 'GET',
                     headers: { 'Authorization': 'Bearer ' + token },
-                    data: { search: request.term },
+                    data: { search: term },
                     success: function (data) {
                         //get data element that has data.userRole.roleName = "student"
                         var studentList = data.filter(function (item) {
                             return item.userRole.roleName.toLowerCase() == "student";
                         });
-                        //looping through studentList and append to student-list
-                        for (var i = 0; i < studentList.length; i++) {
-                            var student = studentList[i];
-                            var html = `<div id="user-item-template">
-                                        <li>
-                                            <input type="checkbox" class="user-checkbox" id=${student.id}>
-                                            <span class="user-name">${student.fullName}</span>
-                                        </li>
-                                    </div>`
-                            //append html to student-list
-                            $("#search-result").append(html);
+
+                        //remove element in studentList if it is in listSelected
+                        for (var i = 0; i < listSelected.length; i++) {
+                            var selected = listSelected[i];
+                            studentList = studentList.filter(function (item) {
+                                return item.userEmail != selected;
+                            });
                         }
+                         // Map the array of student objects to an array of label/value pairs
+                        var results = studentList.map(function(student) {
+                        return {
+                            label: student.userEmail,
+                            value: student.userEmail
+                        };
+                    });
+                        response(results);                        
                     },
                     error: function (xhr, status, error) {
                         alert(xhr.responseText);
@@ -289,13 +296,24 @@
                 })
                 // Return the list of matching students as an array
                 },
-                minLength: 2, // Minimum number of characters required to trigger autocomplete
+                minLength: 2, 
+                multiple: true, // Enable multiple select
                 select: function(event, ui) {
-                // Handle the selection of a student from the autocomplete dropdown
-
+                    //append ui.item.value to allSelectted
+                    allSelectted += ui.item.value + ", ";
+                    listSelected.push(ui.item.value);
+                     // Handle the selection of a student from the autocomplete dropdown
+                    var currentVal = this.value;
+                    var lastChar = currentVal[currentVal.length - 1];
+                    if (lastChar != ",") {
+                        $(this).val(currentVal + ", ");
+                    }
+                    $(this).val(allSelectted);
+                    return false;
                 },
                 focus: function(event, ui) {
                 // Handle the focus event when a student is highlighted in the autocomplete dropdown
+                
                 }
             });
 

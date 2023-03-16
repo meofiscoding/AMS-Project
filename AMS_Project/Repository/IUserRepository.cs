@@ -13,5 +13,9 @@ namespace Repository
         void AddUser(User user);
         User GetUserByEmail(string userEmail);
         User GetUserById(int userId);
+        //get all user
+        List<User> GetUsers();
+        //get all user contain search
+        List<User> FindUsers(string search);
     }
 }

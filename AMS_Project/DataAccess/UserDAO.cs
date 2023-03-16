@@ -50,5 +50,37 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
+
+        //get all user
+        public static List<User> GetUsers()
+        {
+            try
+            {
+                using (var db = new AMSContext())
+                {
+                    return db.Users.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        //get all user contain search
+        public static List<User> FindUsers(string search)
+        {
+            try
+            {
+                using (var db = new AMSContext())
+                {
+                    return db.Users.Where(u => u.UserEmail.Contains(search)).ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
     }
 }

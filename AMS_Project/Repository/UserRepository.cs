@@ -27,5 +27,15 @@ namespace Repository
         {
             return UserDAO.GetUserById(userId);
         }
+
+        public List<User> GetUsers()
+        {
+            return UserDAO.GetUsers();
+        }
+
+        public List<User> FindUsers(string search)
+        {
+            return UserDAO.FindUsers(search);
+        }
     }
 }
