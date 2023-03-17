@@ -42,12 +42,15 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<AMSContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AMS")));
+
 builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<IRoleRepository,RoleRepository>();
 builder.Services.AddScoped<IClassStudentRepository,ClassStudentRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IResourceRepository, ResourceRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
 builder.Services.AddCors();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

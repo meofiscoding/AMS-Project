@@ -7,9 +7,8 @@ using BusinessObject.DataAccess;
 
 namespace Repository
 {
-    public interface IPostRepository
+    public interface ICommentRepository
     {
-        Task CreatePost(Post post);
-        Task<List<Post>> GetPostsByClassId(int classId);
+        ICollection<Comment> GetCommentsByPostId(int id);
     }
 }

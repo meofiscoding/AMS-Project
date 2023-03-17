@@ -14,5 +14,10 @@ namespace Repository
         {
             return PostDAO.CreatePost(post);
         }
+
+        public Task<List<Post>> GetPostsByClassId(int classId)
+        {
+            return PostDAO.GetPostsByClassId(classId);
+        }
     }
 }

@@ -14,5 +14,10 @@ namespace Repository
         {
             return ResourceDAO.CreateResources(resources);
         }
+
+        public ICollection<Resource> GetResourcesByPostId(int id)
+        {
+            return ResourceDAO.GetResourcesByPostId(id);
+        }
     }
 }

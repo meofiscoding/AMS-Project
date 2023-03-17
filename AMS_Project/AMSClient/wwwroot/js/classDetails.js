@@ -1,3 +1,4 @@
+<script src="js/helper.js"></script>
 $(document).ready(function () {
   debugger;
   const token = localStorage.getItem("token");
@@ -23,7 +24,7 @@ $(document).ready(function () {
       .addEventListener("click", function () {
         document.getElementById("upload-input").click();
       });
-      var listFiles = [];
+    var listFiles = [];
     $("#upload-input").on("change", function (e) {
       var files = e.target.files;
       for (var i = 0; i < files.length; i++) {
@@ -31,15 +32,17 @@ $(document).ready(function () {
         listFiles.push(file);
         var fileUI = $(
           '<div class="file-ui">' +
-                '<div style="display: flex; align-items-center">'+
-                    '<i class="fa-solid fa-file-lines fa-2x"></i>' +
-                    '<strong style="margin-left: 10px">' + file.name +'</strong>'+
-                '</div>'
-                //close button
-                +'<div class="close-button" style="margin-left: 10px">'+
-                    '<i class="fa-solid fa-times fa-2x"></i>'+
-                '</div>'+
-            +'<div>'
+            '<div style="display: flex; align-items-center">' +
+            '<i class="fa-solid fa-file-lines fa-2x"></i>' +
+            '<strong style="margin-left: 10px">' +
+            file.name +
+            "</strong>" +
+            "</div>" +
+            //close button
+            '<div class="close-button" style="margin-left: 10px">' +
+            '<i class="fa-solid fa-times fa-2x"></i>' +
+            "</div>" +
+            +"<div>"
         );
         $(".selected-files").append(fileUI);
       }
@@ -47,15 +50,15 @@ $(document).ready(function () {
 
     //close button on click
     $(".selected-files").on("click", ".close-button", function (e) {
-        var fileUI = $(this).parent();
-        var fileName = fileUI.find("strong").text();
-        for (var i = 0; i < listFiles.length; i++) {
-            if (listFiles[i].name == fileName) {
-                listFiles.splice(i, 1);
-                break;
-            }
+      var fileUI = $(this).parent();
+      var fileName = fileUI.find("strong").text();
+      for (var i = 0; i < listFiles.length; i++) {
+        if (listFiles[i].name == fileName) {
+          listFiles.splice(i, 1);
+          break;
         }
-        fileUI.remove();
+      }
+      fileUI.remove();
     });
 
     const postInput = document.getElementById("post-input");
@@ -91,65 +94,139 @@ $(document).ready(function () {
       const selectedTab = tabContents[tabIndex];
       const selectedButton = tabButtons[tabIndex];
 
-      if (tabIndex == 2) {
-        if (
-          $("#student-list").children().length == 0 &&
-          $("#teacher-list").children().length == 0
-        ) {
-          //call ajax to get data
+      if (tabIndex == 0) {
+        var postContainer = $(".post-container");
+        postContainer.empty();
           $.ajax({
-            url: "https://localhost:7290/api/ClassStudents/" + classId,
+            url: "https://localhost:7290/api/Posts/getbyclass/" + classId,
             type: "GET",
             headers: { Authorization: "Bearer " + token },
             success: function (data) {
-              //get data element that has data.userRole.roleName = "student"
-              var studentList = data.filter(function (item) {
-                return item.userRole.roleName.toLowerCase() == "student";
-              });
-              //get first data element that has data.userRole.roleName = "teacher"
-              var teacherList = data.filter(function (item) {
-                return item.userRole.roleName.toLowerCase() == "teacher";
-              });
-              //remove duplicates in teacherList
-              teacherList = teacherList.filter(
-                (v, i, a) => a.findIndex((t) => t.id === v.id) === i
-              );
+              // Render the posts on the page
+              renderPosts(data);
+            },
+            error: function (xhr, status, err) {
+              alert("Failed to get posts for class " + classId);
+            },
+          });
 
-              if (studentList.length == 0) {
-                $("#student-list").append("<li>No student in this class</li>");
-              } else {
-                //looping through studentList and append to student-list
-                for (var i = 0; i < studentList.length; i++) {
-                  var student = studentList[i];
-                  var html = `<div id="user-item-template">
+          // Function to render the posts on the page
+         function renderPosts(posts) {
+             // Loop through each post and append it to the container
+                posts.forEach((post) => {
+                    var postUI = $(`
+                        <div class="card mb-3">
+                             <div class="card-body">
+                               <div class="media">
+                                    <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${post.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
+                                    <div class="media-body">
+                                        <h5 class="mt-0">${post.user.fullName}</h5>
+                                        <p class="text-muted">Posted on ${convertDate(post.createdAt)}</p>
+                                    </div>
+                                </div>
+                                <div class="post-header-right">
+                                    <i class="fa-solid fa-ellipsis-v"></i>
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                <h5 class="card-text">${post.postContent}</h5>
+                            </div>
+                            <hr>
+                            <div class="mb-3">
+                                <a href="file.pdf">Attachment</a>
+                            </div>
+                            <div class="card mb-3">
+                            <div class="card-body">
+                                <form class="col-12">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="comment" rows="3" placeholder="Add a comment..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="comment">
+                                Comments
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="media">
+                                        <img class="mr-3 rounded-circle" src="avatar.jpg" alt="User Avatar" width="50" height="50">
+                                        <div class="media-body">
+                                            <h5 class="mt-0">Jane Doe</h5>
+                                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                            <p class="text-muted">Posted on January 2, 2023</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        </div>
+                    `);
+                    postContainer.append(postUI);
+                });
+                    
+         }
+      }
+
+
+      if (tabIndex == 2) {
+        $("#student-list").empty();
+        $("#teacher-list").empty();
+        //call ajax to get data
+        $.ajax({
+          url: "https://localhost:7290/api/ClassStudents/" + classId,
+          type: "GET",
+          headers: { Authorization: "Bearer " + token },
+          success: function (data) {
+            //get data element that has data.userRole.roleName = "student"
+            var studentList = data.filter(function (item) {
+              return item.userRole.roleName.toLowerCase() == "student";
+            });
+            //get first data element that has data.userRole.roleName = "teacher"
+            var teacherList = data.filter(function (item) {
+              return item.userRole.roleName.toLowerCase() == "teacher";
+            });
+            //remove duplicates in teacherList
+            teacherList = teacherList.filter(
+              (v, i, a) => a.findIndex((t) => t.id === v.id) === i
+            );
+
+            if (studentList.length == 0) {
+              $("#student-list").append("<li>No student in this class</li>");
+            } else {
+              //looping through studentList and append to student-list
+              for (var i = 0; i < studentList.length; i++) {
+                var student = studentList[i];
+                var html = `<div id="user-item-template">
                                                     <li>
                                                         <input type="checkbox" class="user-checkbox" id=${student.id}>
                                                         <span class="user-name">${student.fullName}</span>
                                                     </li>
                                                 </div>`;
-                  //append html to student-list
-                  $("#student-list").append(html);
-                }
+                //append html to student-list
+                $("#student-list").append(html);
               }
+            }
 
-              //looping through teacherList and append to teacher-list
-              for (var i = 0; i < teacherList.length; i++) {
-                var teacher = teacherList[i];
-                var html = `<div id="user-item-template">
+            //looping through teacherList and append to teacher-list
+            for (var i = 0; i < teacherList.length; i++) {
+              var teacher = teacherList[i];
+              var html = `<div id="user-item-template">
                                                 <li>
                                                 <i class="fa-solid fa-graduation-cap"></i>
                                                     <a class="teacher-name">${teacher.fullName}</a>
                                                 </li>
                                             </div>`;
-                //append html to teacher-list
-                $("#teacher-list").append(html);
-              }
-            },
-            error: function (xhr, status, error) {
-              alert(xhr.responseText);
-            },
-          });
-        }
+              //append html to teacher-list
+              $("#teacher-list").append(html);
+            }
+          },
+          error: function (xhr, status, error) {
+            alert(xhr.responseText);
+          },
+        });
       }
 
       selectedTab.style.display = "block";
@@ -176,6 +253,11 @@ $(document).ready(function () {
         $(".class-title").html(data.className);
         $("#stream-classname").html(data.className);
         $("#stream-classcode").html("Class Code: " + data.classCode);
+        //replace src attribute in $(".teacher-ava")
+        $(".teacher-ava").attr(
+          "src",
+          `https://avatars.dicebear.com/api/avataaars/${data.teacher.userEmail}.svg`
+        );
       },
       error: function (xhr, status, error) {
         alert(xhr.responseText);

@@ -21,12 +21,14 @@ namespace AMS_API.Controllers
     {
         private readonly IClassRepository _classRepository;
         private readonly IClassStudentRepository _classStudentRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public ClassesController(IClassRepository classRepository, IClassStudentRepository classStudentRepository)
+        public ClassesController(IClassRepository classRepository, IClassStudentRepository classStudentRepository, IUserRepository userRepository)
         {
             _classRepository = classRepository;
             _classStudentRepository = classStudentRepository;
+            _userRepository = userRepository;
         }
 
          // POST: api/Classes
@@ -61,6 +63,10 @@ namespace AMS_API.Controllers
             {
                 return BadRequest("Class not found");
             }
+
+            //get teacher by @class.IdTeacher
+            var teacher = _userRepository.GetUserById(@class.TeacherId.Value);
+            @class.Teacher = teacher;
             return Ok(@class);
         }
 

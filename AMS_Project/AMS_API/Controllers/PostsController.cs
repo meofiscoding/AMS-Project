@@ -18,12 +18,16 @@ namespace AMS_API.Controllers
         private readonly IClassRepository _classRepository;
         private readonly IPostRepository _postRepository;
         private readonly IResourceRepository _resourceRepository;
+        private readonly ICommentRepository _commentRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PostsController(IClassRepository classRepository, IPostRepository postRepository, IResourceRepository resourceRepository)
+        public PostsController(IClassRepository classRepository, IPostRepository postRepository, IResourceRepository resourceRepository, ICommentRepository commentRepository, IUserRepository userRepository, IUserRepository userRepository1)
         {
             _classRepository = classRepository;
             _postRepository = postRepository;
             _resourceRepository = resourceRepository;
+            _commentRepository = commentRepository;
+            _userRepository = userRepository1;
         }
 
         // GET: api/<PostsController>
@@ -34,10 +38,20 @@ namespace AMS_API.Controllers
         }
 
         // GET api/<PostsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("getbyclass/{classId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<List<PostViewModel>>> GetPostsAndComments(int classId)
         {
-            return "value";
+            var posts = await _postRepository.GetPostsByClassId(classId);
+             // Retrieve comments for this post
+            foreach (var post in posts)
+            {
+                post.Comments = _commentRepository.GetCommentsByPostId(post.Id);
+                post.User = _userRepository.GetUserById(post.UserId);
+                //get list resource of this post
+                post.Resources = _resourceRepository.GetResourcesByPostId(post.Id);
+            }
+            return Ok(posts);
         }
 
         [HttpPost]

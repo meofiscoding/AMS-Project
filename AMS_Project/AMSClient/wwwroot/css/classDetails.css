@@ -11,33 +11,34 @@
         margin: 0 30px;
     }
 
-        .tabview button {
-            background-color: transparent;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 10px;
-            margin-right: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #777;
-            transition: color 0.2s ease-in-out;
-        }
+    .tabview button {
+        background-color: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 10px;
+        margin-right: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #777;
+        transition: color 0.2s ease-in-out;
+    }
 
-            .tabview button.active {
-                color: #6d97cf;
-                border-bottom: 3px solid #1b6796;
-                font-size: large;
-            }
-    li{
+    .tabview button.active {
+        color: #6d97cf;
+        border-bottom: 3px solid #1b6796;
+        font-size: large;
+    }
+
+    li {
         list-style-type: none;
     }
 
-    .teacher-name{
+    .teacher-name {
         font-weight: bold;
     }
 
-    .add-student{
+    .add-student {
         cursor: pointer;
     }
 
@@ -48,66 +49,85 @@
         border-top: 2px solid #aca4a4;
     }
 
-        .tabcontent.active {
-            display: block;
-        }
-        .ui-autocomplete {
-            position: absolute !important;
-            top: 0;
-            left: 0;
-            z-index: 9999;
-        }
+    .tabcontent.active {
+        display: block;
+    }
 
-        .modal-body {
-            height: 500px;
-            overflow-y: auto;
-        }
+    .ui-autocomplete {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        z-index: 9999;
+    }
 
-        .hero-element{
-                background-color: #a2c9df;
-                padding: 20px;
-                color: white;
-                border-radius: 10px;
-                height: 200px
-        }
-        .input-container{
-            padding: 20px;
-            border: 1px solid #b3a6a6;
-            border-radius: 10px;
-        }
+    .modal-body {
+        height: 500px;
+        overflow-y: auto;
+    }
 
-        textarea:focus {
-            outline: none !important;
-            box-shadow: none !important;
-            border-color: #ced4da;
-        }
+    .hero-element {
+        background-color: #a2c9df;
+        padding: 20px;
+        color: white;
+        border-radius: 10px;
+        height: 200px
+    }
 
-        .up-coming{
-                border: 1px solid #b3a6a6;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                height: 200px;
-                justify-content: center;
-        }
+    .input-container {
+        padding: 20px;
+        border: 1px solid #b3a6a6;
+        border-radius: 10px;
+    }
 
-        .file-attach{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    textarea:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        border-color: #ced4da;
+    }
 
-        .input-group{
-            border-radius: 10px !important;
-        }
+    .up-coming {
+        border: 1px solid #b3a6a6;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        height: 200px;
+        justify-content: center;
+    }
 
-        .file-ui {
-            margin-top: 5px;
-            background: #e3e4eb;
-            padding: 14px;
-            border: 1px solid lightgray;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .file-attach {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .input-group {
+        border-radius: 10px !important;
+    }
+
+    .file-ui {
+        margin-top: 5px;
+        background: #e3e4eb;
+        padding: 14px;
+        border: 1px solid lightgray;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .media {
+        display: flex;
+    }
+
+    .media-body {
+        margin-left: 20px;
+    }
+
+    .card-body {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .post-body {
+        padding: 0 30px;
+    }

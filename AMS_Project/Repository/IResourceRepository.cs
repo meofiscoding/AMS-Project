@@ -10,5 +10,6 @@ namespace Repository
     public interface IResourceRepository
     {
         Task CreateResources(List<Resource> resources);
+        ICollection<Resource> GetResourcesByPostId(int id);
     }
 }

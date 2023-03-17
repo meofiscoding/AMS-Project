@@ -19,5 +19,19 @@ namespace DataAccess
                 await db.Entry(post).Collection(p => p.Resources).LoadAsync();
             }
         }
+
+        public static Task<List<Post>> GetPostsByClassId(int classId)
+        {
+            using (var db = new AMSContext())
+            {
+                var posts = db.Posts.Where(p => p.ClassId == classId).ToList();
+                // Eagerly load Resources property
+                foreach (var post in posts)
+                {
+                    db.Entry(post).Collection(p => p.Resources).Load();
+                }
+                return Task.FromResult(posts);
+            }
+        }
     }
 }
