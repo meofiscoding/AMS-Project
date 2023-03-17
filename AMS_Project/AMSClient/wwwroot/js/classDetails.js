@@ -148,7 +148,8 @@ $(document).ready(function () {
                             <div class="card mb-3">
                             <div class="card-body">
                                 <form class="col-12">
-                                    <div class="form-group">
+                                    <div class="form-group" style="display:flex">
+                                    <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg" width = "50" height="50" >
                                         <textarea class="form-control mb-3" id="comment" rows="3" placeholder="Add a comment..."></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Submit</button>
