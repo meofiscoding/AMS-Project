@@ -209,3 +209,34 @@ CREATE TABLE Chat (
     -- get date time sent
     sent_date datetime default getdate(),
 );
+
+CREATE TABLE Post (
+    ID int identity(1,1) primary key,
+    post_title varchar(255) not null,
+    post_content varchar(255) not null,
+    class_id int not null foreign key references Class(ID),
+    user_id int not null foreign key references [User](ID),
+    created_at datetime default getdate(),
+);
+
+CREATE TABLE PostResource (
+    post_id int not null foreign key references Post(ID),
+    resource_id int not null foreign key references Resource(ID),
+    primary key (post_id, resource_id)
+);
+CREATE TABLE [Comment]
+(
+    ID int IDENTITY(1,1) PRIMARY KEY,
+    -- content of the comment
+    content nvarchar(max) NOT NULL,
+    -- the ID of the post that the comment belongs to
+    post_id int NOT NULL FOREIGN KEY REFERENCES [Post](ID),
+    -- the ID of the user who created the comment
+    user_id int NOT NULL FOREIGN KEY REFERENCES [User](ID),
+    -- the ID of the comment that this comment is replying to (nullable)
+    parent_comment_id int NULL FOREIGN KEY REFERENCES [Comment](ID),
+    -- the ID of the resource attached to the comment (nullable)
+    resource_id int NULL FOREIGN KEY REFERENCES [Resource](ID),
+    -- the time that the comment was created
+    created_at datetime NOT NULL DEFAULT GETDATE(),
+);

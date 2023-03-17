@@ -104,6 +104,15 @@
             border-radius: 10px !important;
         }
 
+        .file-ui {
+            margin-top: 5px;
+            background: #e3e4eb;
+            padding: 14px;
+            border: 1px solid lightgray;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+        }
 </style>
 <div class="tabview">
     <strong class="class-title" style="font-size: xx-large;"></strong>
@@ -126,9 +135,14 @@
        <div class="col-md-9">
             <div class="input-communication">
                 <div class="input-group mb-3 input-container">
-                       <i class="fa-solid fa-circle-user fa-2x" style="margin-right:20px"></i>
-                        <textarea id="post-input" class="form-control" placeholder="Write something to class..." aria-label="Write something..." aria-describedby="basic-addon1" style="border:none" rows="1"></textarea>
-                   <div class="input-group my-3 file-attach">
+                    <div class="col-12">
+                        <div style="display: flex" >
+                            <i class="fa-solid fa-circle-user fa-2x" style="margin-right:20px"></i>
+                             <textarea id="post-input" class="form-control" placeholder="Write something to class..." aria-label="Write something..." aria-describedby="basic-addon1" style="border:none" rows="1"></textarea>
+                         </div>
+                         <div class="selected-files"></div>
+                    </div>
+                   <div class="input-group mt-3 mb-1 file-attach">
                     <div class="attach-icon">
                         @* button with icon *@
                         <button class="btn btn-primary" type="button" id="upload-button">
@@ -219,14 +233,21 @@
                           document.getElementById("upload-input").click();
                     });
 
-                    document.getElementById("upload-input").addEventListener("change", function() {
-                         console.log(this.files[0]); // do something with the selected file
+                      $('#upload-input').on('change', function(e) {
+                            var files = e.target.files;
+                            $('.selected-files').empty();
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                var fileUI = $('<div class="file-ui"><i class="fa-solid fa-file-lines fa-2x"></i><strong style="margin-left: 10px">' + file.name + '</strong></div>');
+                                $('.selected-files').append(fileUI);
+                            }
+                        });
+
+                    const postInput = document.getElementById("post-input");
+                            // Add event listener to input
+                            postInput.addEventListener("click", () => {
+                        postInput.rows = 5; // Increase rows to 5
                     });
-                   const postInput = document.getElementById("post-input");
-                        // Add event listener to input
-                        postInput.addEventListener("click", () => {
-                    postInput.rows = 5; // Increase rows to 5
-                  });
 
                     // Add event listener to document
                     document.addEventListener("click", (event) => {
