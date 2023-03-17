@@ -13,7 +13,7 @@ namespace DataAccess
         {
             using (var db = new AMSContext())
             {
-                db.Resources.AddRange(resources);
+                db.Resources.AddRangeAsync(resources);
                 return db.SaveChangesAsync();
             }
         }

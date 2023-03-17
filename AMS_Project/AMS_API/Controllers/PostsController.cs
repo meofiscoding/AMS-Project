@@ -48,7 +48,7 @@ namespace AMS_API.Controllers
             if (@class == null)
             {
                 return BadRequest("Class not found");
-            }  
+            }
 
             var userId = GetUserId();
 
@@ -58,13 +58,21 @@ namespace AMS_API.Controllers
             }
 
             List<Resource> resources = new List<Resource>();
-             //looping through the files and save them to a local directory
+            //looping through the files and save them to a local directory
             foreach (var item in model.Files)
             {
-                if(item.Length >0){
+                if (item.Length > 0)
+                {
                     var fileName = Path.GetFileName(item.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads", fileName);
-                    //get type of file
+                    var directoryPath  = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads");
+
+                    // Create directory if it doesn't exist
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
+                    var filePath = Path.Combine(directoryPath, fileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
@@ -88,7 +96,6 @@ namespace AMS_API.Controllers
                 Resources = resources
             };
             await _postRepository.CreatePost(post);
-            await _resourceRepository.CreateResources(resources);
             return Ok("Post created successfully");
         }
 
@@ -97,7 +104,7 @@ namespace AMS_API.Controllers
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             var userIdClaim = identity?.Claims.FirstOrDefault(c => c.Type == "ID");
-            if(userIdClaim == null)
+            if (userIdClaim == null)
             {
                 return 0;
             }

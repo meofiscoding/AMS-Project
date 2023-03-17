@@ -9,12 +9,14 @@ namespace DataAccess
 {
     public class PostDAO
     {
-        public static Task CreatePost(Post post)
+        public static async Task CreatePost(Post post)
         {
             using (var db = new AMSContext())
             {
                 db.Posts.Add(post);
-                return db.SaveChangesAsync();
+                await db.SaveChangesAsync();
+                // Eagerly load Resources property
+                await db.Entry(post).Collection(p => p.Resources).LoadAsync();
             }
         }
     }

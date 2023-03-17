@@ -1,119 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Class Detail";
 }
-<style>
-    /* Overall styles */
-    body {
-        font-family: sans-serif;
-    }
-
-    /* Tab styles */
-    .tabview {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin: 0 30px;
-    }
-
-        .tabview button {
-            background-color: transparent;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 10px;
-            margin-right: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #777;
-            transition: color 0.2s ease-in-out;
-        }
-
-            .tabview button.active {
-                color: #6d97cf;
-                border-bottom: 3px solid #1b6796;
-                font-size: large;
-            }
-    li{
-        list-style-type: none;
-    }
-
-    .teacher-name{
-        font-weight: bold;
-    }
-
-    .add-student{
-        cursor: pointer;
-    }
-
-    /* Content styles */
-    .tabcontent {
-        display: none;
-        padding: 20px;
-        border-top: 2px solid #aca4a4;
-    }
-
-        .tabcontent.active {
-            display: block;
-        }
-        .ui-autocomplete {
-            position: absolute !important;
-            top: 0;
-            left: 0;
-            z-index: 9999;
-        }
-
-        .modal-body {
-            height: 500px;
-            overflow-y: auto;
-        }
-
-        .hero-element{
-                background-color: #a2c9df;
-                padding: 20px;
-                color: white;
-                border-radius: 10px;
-                height: 200px
-        }
-        .input-container{
-            padding: 20px;
-            border: 1px solid #b3a6a6;
-            border-radius: 10px;
-        }
-
-        textarea:focus {
-            outline: none !important;
-            box-shadow: none !important;
-            border-color: #ced4da;
-        }
-
-        .up-coming{
-                border: 1px solid #b3a6a6;
-                border-radius: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-        }
-
-        .file-attach{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .input-group{
-            border-radius: 10px !important;
-        }
-
-        .file-ui {
-            margin-top: 5px;
-            background: #e3e4eb;
-            padding: 14px;
-            border: 1px solid lightgray;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-        }
-</style>
+<link rel="stylesheet" href="~/css/classDetails.css" />
 <div class="tabview">
     <strong class="class-title" style="font-size: xx-large;"></strong>
     <button class="tablinks active">Class Work</button>
@@ -123,41 +11,98 @@
 </div>
 
 <div id="tab1" class="tabcontent active">
-     <div class="hero-element">
-    <h1 id="stream-classname"></h1>
-    <p id="stream-classcode"></p>
-  </div>
-  <div class="container mt-3">
-      <div class="row col-md-12">
-        <div class="col-md-3 up-coming">
-            <strong>Nothing due in this week!!</strong>
-        </div>
-       <div class="col-md-9">
-            <div class="input-communication">
-                <div class="input-group mb-3 input-container">
-                    <div class="col-12">
-                        <div style="display: flex" >
-                            <i class="fa-solid fa-circle-user fa-2x" style="margin-right:20px"></i>
-                             <textarea id="post-input" class="form-control" placeholder="Write something to class..." aria-label="Write something..." aria-describedby="basic-addon1" style="border:none" rows="1"></textarea>
-                         </div>
-                         <div class="selected-files"></div>
-                    </div>
-                   <div class="input-group mt-3 mb-1 file-attach">
-                    <div class="attach-icon">
-                        @* button with icon *@
-                        <button class="btn btn-primary" type="button" id="upload-button">
-                            <i class="fa-solid fa-paperclip"></i> Add file
-                            <input type="file" class="file-input" id="upload-input" style="display:none;">
-                        </button>
-                    </div>
-                    <button type="button" class="btn btn-primary btn-post">Post</button>
-                </div>
-                </div>
+    <div class="hero-element">
+        <h1 id="stream-classname"></h1>
+        <p id="stream-classcode"></p>
+    </div>
+    <div class="container mt-3">
+        <div class="row col-md-12">
+            <div class="col-md-3 up-coming">
+                <strong>Nothing due in this week!!</strong>
             </div>
-      </div>
-      </div>
-  </div>
- </div>
+            <div class="col-md-9">
+                <!-- Post input -->
+                <div class="input-communication">
+                    <div class="input-group mb-3 input-container">
+                        <div class="col-12">
+                            <div style="display: flex">
+                                <i class="fa-solid fa-circle-user fa-2x" style="margin-right:20px"></i>
+                                <textarea id="post-input" class="form-control" placeholder="Write something to class..." aria-label="Write something..." aria-describedby="basic-addon1" style="border:none" rows="1"></textarea>
+                            </div>
+                            <div class="selected-files"></div>
+                        </div>
+                        <div class="input-group mt-3 mb-1 file-attach">
+                            <div class="attach-icon">
+                                @* button with icon *@
+                                <button class="btn btn-primary" type="button" id="upload-button">
+                                    <i class="fa-solid fa-paperclip"></i> Add file
+                                    <input type="file" class="file-input" id="upload-input" style="display:none;">
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-post">Post</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Post 1 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="media">
+                            <img class="mr-3 rounded-circle" src="avatar.jpg" alt="User Avatar" width="50" height="50">
+                            <div class="media-body">
+                                <h5 class="mt-0">John Doe</h5>
+                                <p class="text-muted">Posted on January 1, 2023</p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vel eleifend nisl, eu porttitor erat. Donec ac malesuada augue. In hac habitasse platea dictumst. Nulla feugiat ipsum vel nunc congue, nec bibendum velit malesuada. Proin sodales dui vel eleifend facilisis. Duis feugiat consequat lorem, ac efficitur quam gravida ut. Donec sit amet elit in orci malesuada auctor. Sed cursus est et enim pharetra, eget euismod arcu ultricies.</p>
+                        <hr>
+                        <div class="mb-3">
+                            <a href="file.pdf">Attachment</a>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <form>
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="comment" rows="3" placeholder="Add a comment..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                Comments
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="media">
+                                        <img class="mr-3 rounded-circle" src="avatar.jpg" alt="User Avatar" width="50" height="50">
+                                        <div class="media-body">
+                                            <h5 class="mt-0">Jane Doe</h5>
+                                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                            <p class="text-muted">Posted on January 2, 2023</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="media">
+                                        <img class="mr-3 rounded-circle" src="avatar.jpg" alt="User Avatar" width="50" height="50">
+                                        <div class="media-body">
+                                            <h5 class="mt-0">Bob Smith</h5>
+                                            <p class="card-text">Nulla feugiat ipsum vel nunc congue, nec bibendum velit malesuada.</p>
+                                            <p class="text-muted">Posted on January 3, 2023</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <div id="tab2" class="tabcontent">
 </div>
@@ -165,334 +110,46 @@
 <div id="tab3" class="tabcontent">
     <div>
         <h3 style=" color: #0a5e15;">Teachers</h3>
-        <ul id="teacher-list" >
+        <ul id="teacher-list">
             <!-- The list of teachers will be dynamically generated here -->
         </ul>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-             <h3 style=" color: #0a5e15;">Students</h3>
+            <h3 style=" color: #0a5e15;">Students</h3>
             <strong class="add-student" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Student <i class="fa-solid fa-user-plus"></i></strong>
         </div>
-        <ul id="student-list" >
+        <ul id="student-list">
             <!-- The list of students will be dynamically generated here -->
         </ul>
     </div>
 </div>
 
 <div id="tab4" class="tabcontent">
-
 </div>
 
 <!-- Bootstrap modal which has an input search and a button invite-->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Add Student</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="search-input" placeholder="Search for student" aria-label="Search for student">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addToClass">Add to Class</button>
+            </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="addToClass">Add to Class</button>
-      </div>
     </div>
-  </div>
 </div>
 
 @section Scripts{
     <partial name="_ValidationScriptsPartial" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
-    <script>
-  $(document).ready(function() {
-            debugger;
-           const token = localStorage.getItem('token');
-            //redirect to the login page if the local storage is empty
-            if(token == null)
-            {
-                window.location.href = "/Login";
-                return;
-            }
-
-            // Decode the token to get the expiration time
-            const decodedToken = jwt_decode(token);
-            // Check if the token has expired
-            const expirationTime = decodedToken.exp;
-            //get user name from token
-            //const userName = decodedToken.unique_name;
-
-            if (Date.now() >= expirationTime * 1000) {
-                 // Prompt the user to log in again
-              alert('Your session has expired. Please log in again.');
-            } else {
-                    document.getElementById("upload-button").addEventListener("click", function() {
-                          document.getElementById("upload-input").click();
-                    });
-
-                      $('#upload-input').on('change', function(e) {
-                            var files = e.target.files;
-                            for (var i = 0; i < files.length; i++) {
-                                var file = files[i];
-                                var fileUI = $('<div class="file-ui"><i class="fa-solid fa-file-lines fa-2x"></i><strong style="margin-left: 10px">' + file.name + '</strong></div>');
-                                $('.selected-files').append(fileUI);
-                            }
-                        });
-
-                    const postInput = document.getElementById("post-input");
-                            // Add event listener to input
-                            postInput.addEventListener("click", () => {
-                        postInput.rows = 5; // Increase rows to 5
-                    });
-
-                    // Add event listener to document
-                    document.addEventListener("click", (event) => {
-                        if (!postInput.contains(event.target)) {
-                            postInput.rows = 1; // Reduce rows to 1
-                        }
-                   });
-                    // Get all the tabs and the content
-                    const tabButtons = document.querySelectorAll(".tablinks");
-                    const tabContents = document.querySelectorAll(".tabcontent");
-                    var url = window.location.href;
-                    const classId = url.substring(url.lastIndexOf('/') + 1);
-
-                    function showTab(tabIndex) {
-                        // Hide all tab contents
-                        tabContents.forEach((content) => {
-                            content.style.display = "none";
-                        });
-
-                        // Remove active class from all tab buttons
-                        tabButtons.forEach((button) => {
-                            button.classList.remove("active");
-                        });
-
-                        // Show the selected tab content and set the corresponding button as active
-                        const selectedTab = tabContents[tabIndex];
-                        const selectedButton = tabButtons[tabIndex];
-            
-                        if(tabIndex == 2){
-                            if($("#student-list").children().length == 0 && $("#teacher-list").children().length == 0){
-                                //call ajax to get data
-                                $.ajax({
-                                    url: 'https://localhost:7290/api/ClassStudents/' + classId,
-                                    type: 'GET',
-                                    headers: { 'Authorization': 'Bearer ' + token },
-                                    success: function (data) {
-                                        //get data element that has data.userRole.roleName = "student"
-                                        var studentList = data.filter(function (item) {
-                                            return item.userRole.roleName.toLowerCase() == "student";
-                                        });
-                                        //get first data element that has data.userRole.roleName = "teacher"
-                                        var teacherList = data.filter(function (item) {
-                                            return item.userRole.roleName.toLowerCase() == "teacher";
-                                        });
-                                        //remove duplicates in teacherList
-                                        teacherList = teacherList.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i)
-
-                                        if(studentList.length == 0)
-                                        {
-                                            $("#student-list").append("<li>No student in this class</li>");
-                                        }else{
-                                            //looping through studentList and append to student-list
-                                            for (var i = 0; i < studentList.length; i++) {
-                                                var student = studentList[i];
-                                                var html = `<div id="user-item-template">
-                                                            <li>
-                                                                <input type="checkbox" class="user-checkbox" id=${student.id}>
-                                                                <span class="user-name">${student.fullName}</span>
-                                                            </li>
-                                                        </div>`
-                                                //append html to student-list
-                                                $("#student-list").append(html);
-                                            }
-                                        }
-                                    
-                                        //looping through teacherList and append to teacher-list
-                                        for (var i = 0; i < teacherList.length; i++) {
-                                            var teacher = teacherList[i];
-                                            var html = `<div id="user-item-template">
-                                                        <li>
-                                                        <i class="fa-solid fa-graduation-cap"></i>
-                                                            <a class="teacher-name">${teacher.fullName}</a>
-                                                        </li>
-                                                    </div>`
-                                            //append html to teacher-list
-                                            $("#teacher-list").append(html);
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert(xhr.responseText);
-                                    }
-                                })
-                            }     
-                        }
-                        
-
-                            selectedTab.style.display = "block";
-                            selectedButton.classList.add("active");
-                        }
-
-                        // Show the first tab by default
-                        showTab(0);
-
-                        // Add click event listeners to tab buttons
-                        tabButtons.forEach((button, index) => {
-                            button.addEventListener("click", () => {
-                                showTab(index);
-                            });
-                        });
-
-                            //make an ajax call
-                            $.ajax({
-                                url: 'https://localhost:7290/api/Classes/' + classId,
-                                type: 'GET',
-                                headers: { 'Authorization': 'Bearer ' + token },
-                                success: function (data) {
-                                    //set class-title html is class name
-                                    $(".class-title").html(data.className);
-                                    $("#stream-classname").html(data.className);
-                                    $("#stream-classcode").html("Class Code: "+ data.classCode);
-                                },
-                                error: function (xhr, status, error) {
-                                    alert(xhr.responseText);
-                                }
-                            });
-
-                            var allSelectted = "";
-                            var listSelected = [];
-                            function extractLast(term) {
-                                //check if term contain ","
-                                if (term.indexOf(",") == -1) {
-                                    return term;
-                                }else{
-                                    return term.split(',').pop().trim();
-                                }
-                            }
-
-                            $("#search-input").autocomplete({
-                                source: function(request, response) {
-                                    var term = extractLast(request.term)
-                                    debugger;
-                                // Make an AJAX call to your server to get a list of matching students based on the search term
-                                $.ajax({
-                                    url: 'https://localhost:7290/api/Users',
-                                    type: 'GET',
-                                    headers: { 'Authorization': 'Bearer ' + token },
-                                    data: { search: term },
-                                    success: function (data) {
-                                        //get data element that has data.userRole.roleName = "student"
-                                        var studentList = data.filter(function (item) {
-                                            return item.userRole.roleName.toLowerCase() == "student";
-                                        });
-
-                                        //remove element in studentList if it is in listSelected
-                                        for (var i = 0; i < listSelected.length; i++) {
-                                            var selected = listSelected[i];
-                                            studentList = studentList.filter(function (item) {
-                                                return item.id != selected;
-                                            });
-                                        }
-                                        // Map the array of student objects to an array of label/value pairs
-                                        var results = studentList.map(function(student) {
-                                        return {
-                                            label: student.userEmail,
-                                            value: student.id
-                                        };
-                                    });
-                                        response(results);                        
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert(xhr.responseText);
-                                    }
-                                })
-                                // Return the list of matching students as an array
-                                },
-                                minLength: 2, 
-                                multiple: true, // Enable multiple select
-                                select: function(event, ui) {
-                                    //append ui.item.value to allSelectted
-                                    allSelectted += ui.item.label + ", ";
-                                    listSelected.push(ui.item.value);
-                                    $(this).val(allSelectted);
-                                    return false;
-                                },
-                                focus: function(event, ui) {
-                                // Handle the focus event when a student is highlighted in the autocomplete dropdown
-                                
-                                }
-                            });
-
-                            //each time user delete a character in search-input
-                            $("#search-input").on("keydown", function (event) {
-                                //check if user press backspace
-                                if (event.keyCode == 8) {
-                                    //get the last character in allSelectted
-                                    var lastChar = allSelectted[allSelectted.length - 1];
-                                    //check if lastChar is ","
-                                    if (lastChar == ",") {
-                                        //remove the last character in allSelectted
-                                        allSelectted = allSelectted.substring(0, allSelectted.length - 1);
-                                        //remove the last element in listSelected
-                                        listSelected.pop();
-                                    }
-                                }
-                            });
-
-                            //onClick in #addToClass
-                            $("#addToClass").click(function(){
-                                //call api to add user to class using listSelected
-                                $.ajax({
-                                    url: 'https://localhost:7290/api/ClassStudents/'+classId+'/students',
-                                    type: 'POST',
-                                    contentType: 'application/json',
-                                    headers: { 'Authorization': 'Bearer ' + token },
-                                    data: JSON.stringify (listSelected ),
-                                    success: function (data) {
-                                        alert(data);
-                                        location.reload();
-                                    },
-                                    error: function (xhr, status, error) {
-                                        alert(xhr.responseText);
-                                    }
-                                })
-                            });
-                            
-                        $(".btn-post").click(function(e){ 
-                            //create a new FormData object
-                            var formData = new FormData();
-                            // Append the classId and content from text area to the FormData object
-                            formData.append("ClassId", classId);
-                            //get text from text area
-                            formData.append("Content", $("#post-input").val());
-                            // Loop through each file and append it to the FormData object
-                            for (var i = 0; i < files.length; i++) {
-                                var file = files[i];
-                                formData.append("Files", file, file.name);
-                            }
-
-                            // Make an AJAX call to your server to add the post
-                            $.ajax({
-                                url: 'https://localhost:7290/api/Posts',
-                                type: 'POST',
-                                headers: { 'Authorization': 'Bearer ' + token },
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                success: function (data) {
-                                    alert(data);
-                                    location.reload();
-                                },
-                                error: function (xhr, status, error) {
-                                    alert(xhr.responseText);
-                                }
-                            })
-                        }
-        }
-  });
-    </script>
-    }
+    <script src="~/js/classDetails.js"></script>
+   }
