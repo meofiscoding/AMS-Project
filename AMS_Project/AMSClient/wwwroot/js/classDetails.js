@@ -251,9 +251,10 @@ $(document).ready(function () {
         }
 
         //add comment
-        $(".post-container").on("click", ".add-comment", () => {
-          var comment = $("#comment").val();
-          var postId = $(".add-comment").attr("data-post-id");
+        $(".post-container").on("click", ".add-comment", function(e) {
+          //get comment
+          var comment = $(this).closest("form").find("#comment").val();
+          var postId = $(this).data('post-id');
           $.ajax({
             url: "https://localhost:7290/api/Comments",
             type: "POST",
