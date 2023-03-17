@@ -34,20 +34,31 @@ $(document).ready(function () {
       for (var i = 0; i < files.length; i++) {
         var file = files[i];
         listFiles.push(file);
-        var fileUI = $(
-          '<div class="file-ui">' +
-            '<div style="display: flex; align-items-center">' +
-            '<i class="fa-solid fa-file-lines fa-2x"></i>' +
-            '<strong style="margin-left: 10px">' +
-            file.name +
-            "</strong>" +
-            "</div>" +
-            //close button
-            '<div class="close-button" style="margin-left: 10px">' +
-            '<i class="fa-solid fa-times fa-2x"></i>' +
-            "</div>" +
-            +"<div>"
-        );
+        var fileUI = "";
+        //check file type
+        if (file.type.match("image.*")) {
+          fileUI = `<img src="${URL.createObjectURL(file)}" width="50%"/>`;
+        } else if (file.type.match("video.*")) {
+          fileUI = ` <video controls>
+            <source src="${URL.createObjectURL(file)}" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>`;
+        } else {
+          fileUI = $(
+            '<div class="file-ui">' +
+              '<div style="display: flex; align-items-center">' +
+              '<i class="fa-solid fa-file-lines fa-2x"></i>' +
+              '<strong style="margin-left: 10px">' +
+              file.name +
+              "</strong>" +
+              "</div>" +
+              //close button
+              '<div class="close-button" style="margin-left: 10px">' +
+              '<i class="fa-solid fa-times fa-2x"></i>' +
+              "</div>" +
+              +"<div>"
+          );
+        }
         $(".selected-files").append(fileUI);
       }
     });
@@ -209,14 +220,16 @@ $(document).ready(function () {
             var comment = comments[i];
             html += ` <li class="list-group-item">
                             <div class="media">
-                                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${comment.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
+                                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${
+                                  comment.user.userEmail
+                                }.svg" alt="User Avatar" width="50" height="50">
                                 <div class="media-body">
                                     <strong class="mt-0">${
-                                        comment.user.fullName ==
-                                        decodedToken.FullName
-                                          ? "You"
-                                          : comment.user.fullName
-                                      }</strong>
+                                      comment.user.fullName ==
+                                      decodedToken.FullName
+                                        ? "You"
+                                        : comment.user.fullName
+                                    }</strong>
                                       ${
                                         comment.user.userRole.roleName.toLowerCase() ==
                                         "teacher"
@@ -225,8 +238,8 @@ $(document).ready(function () {
                                       }
                                     <p class="card-text">${comment.content}</p>
                                     <p class="text-muted">Commented on ${moment(
-                                        comment.createdAt
-                                      ).fromNow()}</p>
+                                      comment.createdAt
+                                    ).fromNow()}</p>
                                 </div>
                             </div>
                         </li>`;
@@ -238,7 +251,7 @@ $(document).ready(function () {
         }
 
         //add comment
-        $(".post-container").on("click",".add-comment", () => {
+        $(".post-container").on("click", ".add-comment", () => {
           var comment = $("#comment").val();
           var postId = $(".add-comment").attr("data-post-id");
           $.ajax({
@@ -258,7 +271,7 @@ $(document).ready(function () {
         });
 
         //on input change
-        $(".post-container").on("input","#comment", function () {
+        $(".post-container").on("input", "#comment", function () {
           //check if it has value
           if ($(this).val() != "") {
             //remove disabled attribute in .add-comment
