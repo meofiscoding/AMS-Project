@@ -18,11 +18,11 @@ $(document).ready(function () {
     // Prompt the user to log in again
     alert("Your session has expired. Please log in again.");
   } else {
-     //replace src attribute in $(".teacher-ava")
-     $(".post-ava").attr(
-        "src",
-        `https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg`
-      );
+    //replace src attribute in $(".teacher-ava")
+    $(".post-ava").attr(
+      "src",
+      `https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg`
+    );
     document
       .getElementById("upload-button")
       .addEventListener("click", function () {
@@ -71,12 +71,6 @@ $(document).ready(function () {
       postInput.rows = 5; // Increase rows to 5
     });
 
-    // Add event listener to document
-    document.addEventListener("click", (event) => {
-      if (!postInput.contains(event.target)) {
-        postInput.rows = 1; // Reduce rows to 1
-      }
-    });
     // Get all the tabs and the content
     const tabButtons = document.querySelectorAll(".tablinks");
     const tabContents = document.querySelectorAll(".tabcontent");
@@ -127,9 +121,17 @@ $(document).ready(function () {
                                     }.svg" alt="User Avatar" width="50" height="50">
                                     <div class="media-body">
                                         <h5 class="mt-0">${
-                                          post.user.fullName == decodedToken.FullName? "You" : post.user.fullName
+                                          post.user.fullName ==
+                                          decodedToken.FullName
+                                            ? "You"
+                                            : post.user.fullName
                                         }</h5>
-                                        ${(post.user.userRole.roleName.toLowerCase()) == "teacher" ? 'Teacher <i class="fa-solid fa-crown"></i>' : ''}
+                                        ${
+                                          post.user.userRole.roleName.toLowerCase() ==
+                                          "teacher"
+                                            ? 'Teacher <i class="fa-solid fa-crown"></i>'
+                                            : ""
+                                        }
                                         <p class="text-muted">Posted on ${moment(
                                           post.createdAt
                                         ).fromNow()}</p>
@@ -146,19 +148,23 @@ $(document).ready(function () {
                                 ${renderResources(post.resources)}
                             </div>
                             <div class="card mb-3">
-                            <div class="card-body">
-                                <form class="col-12">
-                                    <div class="form-group" style="display:flex">
-                                    <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg" width = "50" height="50" >
-                                        <textarea class="form-control mb-3" id="comment" rows="3" placeholder="Add a comment..."></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Submit</button>
-                                </form>
-                            </div>
                         </div>
                         <div class="card">
                                   ${renderComments(post.comments)}
                         </div>
+                        <div class="card-body">
+                        <form class="col-12">
+                            <div class="form-group" style="display:flex">
+                            <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${
+                              decodedToken.unique_name
+                            }.svg" width = "50" height="50" >
+                                <textarea class="form-control mb-3" id="comment" rows="3" placeholder="Add a comment..."></textarea>
+                            </div>
+                            <button type="button" class="btn btn-primary add-comment" data-post-id="${
+                              post.id
+                            }" disabled>Submit</button>
+                        </form>
+                    </div>
                         </div>
                     `);
             postContainer.append(postUI);
@@ -195,7 +201,7 @@ $(document).ready(function () {
           var html = "";
           if (comments.length > 0) {
             html += `<div class="comment">
-                             Comments
+                             <strong>Comments</strong>
                       </div>
                  <ul class="list-group list-group-flush">`;
           }
@@ -203,11 +209,24 @@ $(document).ready(function () {
             var comment = comments[i];
             html += ` <li class="list-group-item">
                             <div class="media">
-                                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${post.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
+                                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${comment.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
                                 <div class="media-body">
-                                    <h5 class="mt-0">Jane Doe</h5>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                                    <p class="text-muted">Posted on January 2, 2023</p>
+                                    <strong class="mt-0">${
+                                        comment.user.fullName ==
+                                        decodedToken.FullName
+                                          ? "You"
+                                          : comment.user.fullName
+                                      }</strong>
+                                      ${
+                                        comment.user.userRole.roleName.toLowerCase() ==
+                                        "teacher"
+                                          ? '<i class="fa-solid fa-crown"></i>'
+                                          : ""
+                                      }
+                                    <p class="card-text">${comment.content}</p>
+                                    <p class="text-muted">Commented on ${moment(
+                                        comment.createdAt
+                                      ).fromNow()}</p>
                                 </div>
                             </div>
                         </li>`;
@@ -217,6 +236,38 @@ $(document).ready(function () {
           }
           return html;
         }
+
+        //add comment
+        $(".post-container").on("click",".add-comment", () => {
+          var comment = $("#comment").val();
+          var postId = $(".add-comment").attr("data-post-id");
+          $.ajax({
+            url: "https://localhost:7290/api/Comments",
+            type: "POST",
+            contentType: "application/json",
+            headers: { Authorization: "Bearer " + token },
+            data: JSON.stringify({ Content: comment, PostId: postId }),
+            success: function (data) {
+              alert("Comment added successfully!");
+              window.location.reload();
+            },
+            error: function (xhr, status, err) {
+              alert("Failed to add comment");
+            },
+          });
+        });
+
+        //on input change
+        $(".post-container").on("input","#comment", function () {
+          //check if it has value
+          if ($(this).val() != "") {
+            //remove disabled attribute in .add-comment
+            $(".add-comment").removeAttr("disabled");
+          } else {
+            //add disabled attribute in .add-comment
+            $(".add-comment").attr("disabled", "disabled");
+          }
+        });
       }
 
       if (tabIndex == 2) {

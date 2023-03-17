@@ -10,6 +10,11 @@ namespace Repository
 {
     public class CommentRepository : ICommentRepository
     {
+        public Task CreateComment(Comment comment)
+        {
+            return CommentDAO.CreateComment(comment);
+        }
+
         public ICollection<Comment> GetCommentsByPostId(int id)
         {
             return CommentDAO.GetCommentsByPostId(id);

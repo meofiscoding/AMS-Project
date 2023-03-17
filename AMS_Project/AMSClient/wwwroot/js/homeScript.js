@@ -37,15 +37,11 @@ $(document).ready(function () {
       type: "GET",
       headers: { Authorization: "Bearer " + token },
       success: function (result) {
-        //check if result.classes has element in list
-        if (result.classes.length === 0) {
-          // Display the Join Class or Create Class button based on the user's role
-          if (result.role.toLowerCase() === "student") {
-            $("#join-class-button").removeClass("d-none");
-          } else if (result.role.toLowerCase() === "teacher") {
-            $("#create-class-button").removeClass("d-none");
-          }
-        } else {
+        if (result.role.toLowerCase() === "student") {
+          $("#create-class-button").addClass("d-none");
+        } else if (result.role.toLowerCase() === "teacher") {
+          $("#join-class-button").addClass("d-none");
+        }
           debugger;
           // Display the classes
           result.classes.forEach(function (cls) {
@@ -57,7 +53,9 @@ $(document).ready(function () {
                                       cls.id
                                     }">${cls.className}</a>
                                     <p>Class Code: ${cls.classCode}</p>
-                                    <p>Created Date: ${moment(cls.createAt).fromNow()}</p>
+                                    <p>Created Date: ${moment(
+                                      cls.createAt
+                                    ).fromNow()}</p>
                                     <span class="badge badge-${
                                       cls.classStatus == 1
                                         ? "success"
@@ -76,7 +74,6 @@ $(document).ready(function () {
                         </div>`;
             $(".classrooms").append(listItem);
           });
-        }
       },
       error: function (xhr, status, error) {
         alert(xhr.responseText);
@@ -108,8 +105,6 @@ $(document).ready(function () {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
         success: function (result) {
-          //add d-none class to button
-          $("#create-class-button").removeClass("d-none");
           //add html to show class
           const classHTML = ` <div class="classroom-card">
                 <div class="classroom-card-header">
@@ -119,7 +114,9 @@ $(document).ready(function () {
                           result.id
                         }">${result.className}</a>
                         <p>Class Code: ${result.classCode}</p>
-                        <p>Created Date: ${moment(result.createAt).fromNow()}</p>
+                        <p>Created Date: ${moment(
+                          result.createAt
+                        ).fromNow()}</p>
                         <span class="badge badge-${
                           result.classStatus == 1 ? "success" : "danger"
                         }" id="status-active">${
@@ -135,8 +132,6 @@ $(document).ready(function () {
                 </div>
             </div>`;
           $(".classrooms").append(classHTML);
-          //add d-none class to button
-          $("#create-class-button").addClass("d-none");
           //close modal
           $("#exampleModal").modal("hide");
         },

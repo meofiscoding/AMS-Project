@@ -9,6 +9,7 @@ namespace Repository
 {
     public interface ICommentRepository
     {
+        Task CreateComment(Comment comment);
         ICollection<Comment> GetCommentsByPostId(int id);
     }
 }
