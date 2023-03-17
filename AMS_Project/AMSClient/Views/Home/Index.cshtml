@@ -1,92 +1,7 @@
-﻿<style>
-    .error{
-        color: red;
-    }
-        .classrooms {
-        display: flex;
-        flex-wrap: wrap;
-        margin: -15px;
-    }
-
-    .classroom-card {
-        flex: 0 0 300px;
-        margin: 15px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .classroom-card-header {
-        display: flex;
-        align-items: center;
-        padding: 20px;
-        background-color: #d6eaff;
-    }
-
-    .classroom-card-icon {
-        font-size: 32px;
-        color: #007bff;
-        margin-right: 20px;
-    }
-
-    .classroom-card-title h2 {
-        margin: 0;
-        font-size: 24px;
-    }
-
-    .classroom-card-title p {
-        margin: 0;
-        font-size: 16px;
-        color: #999;
-    }
-
-    .classroom-card-body {
-        padding: 20px;
-    }
-
-    .badge-success {
-        color: #fff;
-        background-color: #28a745;
-    }
-
-    .badge-danger {
-        color: #fff;
-        background-color: #dc3545;
-    }
-
-    .classroom-card-link{
-    font-size: 20px;
-    font-weight: bold;
-    }
-
-    .btn {
-        display: inline-block;
-        font-weight: 400;
-        color: #fff;
-        text-align: center;
-        vertical-align: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        background-color: #007bff;
-        border: 1px solid #007bff;
-        border-radius: 0.25rem;
-        padding: 0.375rem 0.75rem;
-        font-size: 1rem;
-        line-height: 1.5;
-        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-
-        .btn:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-        }
-</style>
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+<link rel="stylesheet" href="~/css/home.css" />
 <div id="dashboard-buttons" style="display: flex;justify-content: center;">
     <button id="join-class-button" class="btn btn-primary d-none">Join Class</button>
     <button id="create-class-button" class="btn btn-primary d-none" data-toggle="modal" data-target="#exampleModal">Create Class</button>
@@ -127,4 +42,5 @@
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
         <script src="~/js/homeScript.js"></script> 
+        <script src="~/js/helper.js"></script>
 }

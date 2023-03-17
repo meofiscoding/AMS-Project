@@ -1,4 +1,3 @@
-<script src="js/helper.js"></script>
 $(document).ready(function () {
   debugger;
   // Get the token from local storage
@@ -58,9 +57,7 @@ $(document).ready(function () {
                                       cls.id
                                     }">${cls.className}</a>
                                     <p>Class Code: ${cls.classCode}</p>
-                                    <p>Created Date: ${convertDate(
-                                      cls.createAt
-                                    )}</p>
+                                    <p>Created Date: ${moment(cls.createAt).fromNow()}</p>
                                     <span class="badge badge-${
                                       cls.classStatus == 1
                                         ? "success"
@@ -122,7 +119,7 @@ $(document).ready(function () {
                           result.id
                         }">${result.className}</a>
                         <p>Class Code: ${result.classCode}</p>
-                        <p>Created Date: ${convertDate(result.createAt)}</p>
+                        <p>Created Date: ${moment(result.createAt).fromNow()}</p>
                         <span class="badge badge-${
                           result.classStatus == 1 ? "success" : "danger"
                         }" id="status-active">${

@@ -1,4 +1,3 @@
-<script src="js/helper.js"></script>
 $(document).ready(function () {
   debugger;
   const token = localStorage.getItem("token");
@@ -121,7 +120,7 @@ $(document).ready(function () {
                                     <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${post.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
                                     <div class="media-body">
                                         <h5 class="mt-0">${post.user.fullName}</h5>
-                                        <p class="text-muted">Posted on ${convertDate(post.createdAt)}</p>
+                                        <p class="text-muted">Posted on ${moment(post.createdAt).fromNow()}</p>
                                     </div>
                                 </div>
                                 <div class="post-header-right">
