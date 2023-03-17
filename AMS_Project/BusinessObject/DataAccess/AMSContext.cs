@@ -348,11 +348,6 @@ namespace BusinessObject.DataAccess
                     .IsUnicode(false)
                     .HasColumnName("post_content");
 
-                entity.Property(e => e.PostTitle)
-                    .HasMaxLength(255)
-                    .IsUnicode(false)
-                    .HasColumnName("post_title");
-
                 entity.Property(e => e.UserId).HasColumnName("user_id");
 
                 entity.HasOne(d => d.Class)

@@ -12,7 +12,6 @@ namespace BusinessObject.DataAccess
         }
 
         public int Id { get; set; }
-        public string PostTitle { get; set; } = null!;
         public string PostContent { get; set; } = null!;
         public int ClassId { get; set; }
         public int UserId { get; set; }

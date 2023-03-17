@@ -150,7 +150,7 @@
                             <input type="file" class="file-input" id="upload-input" style="display:none;">
                         </button>
                     </div>
-                    <button type="submit" class="btn btn-primary">Post</button>
+                    <button type="button" class="btn btn-primary btn-post">Post</button>
                 </div>
                 </div>
             </div>
@@ -235,7 +235,6 @@
 
                       $('#upload-input').on('change', function(e) {
                             var files = e.target.files;
-                            $('.selected-files').empty();
                             for (var i = 0; i < files.length; i++) {
                                 var file = files[i];
                                 var fileUI = $('<div class="file-ui"><i class="fa-solid fa-file-lines fa-2x"></i><strong style="margin-left: 10px">' + file.name + '</strong></div>');
@@ -462,6 +461,37 @@
                                     }
                                 })
                             });
+                            
+                        $(".btn-post").click(function(e){ 
+                            //create a new FormData object
+                            var formData = new FormData();
+                            // Append the classId and content from text area to the FormData object
+                            formData.append("ClassId", classId);
+                            //get text from text area
+                            formData.append("Content", $("#post-input").val());
+                            // Loop through each file and append it to the FormData object
+                            for (var i = 0; i < files.length; i++) {
+                                var file = files[i];
+                                formData.append("Files", file, file.name);
+                            }
+
+                            // Make an AJAX call to your server to add the post
+                            $.ajax({
+                                url: 'https://localhost:7290/api/Posts',
+                                type: 'POST',
+                                headers: { 'Authorization': 'Bearer ' + token },
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function (data) {
+                                    alert(data);
+                                    location.reload();
+                                },
+                                error: function (xhr, status, error) {
+                                    alert(xhr.responseText);
+                                }
+                            })
+                        }
         }
   });
     </script>
