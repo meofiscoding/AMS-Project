@@ -24,7 +24,7 @@ namespace DataAccess
         {
             using (var db = new AMSContext())
             {
-                var posts = db.Posts.Where(p => p.ClassId == classId).ToList();
+                var posts = db.Posts.Where(p => p.ClassId == classId).OrderByDescending(p => p.CreatedAt).ToList();
                 // Eagerly load Resources property
                 foreach (var post in posts)
                 {

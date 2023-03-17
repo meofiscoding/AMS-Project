@@ -96,31 +96,37 @@ $(document).ready(function () {
       if (tabIndex == 0) {
         var postContainer = $(".post-container");
         postContainer.empty();
-          $.ajax({
-            url: "https://localhost:7290/api/Posts/getbyclass/" + classId,
-            type: "GET",
-            headers: { Authorization: "Bearer " + token },
-            success: function (data) {
-              // Render the posts on the page
-              renderPosts(data);
-            },
-            error: function (xhr, status, err) {
-              alert("Failed to get posts for class " + classId);
-            },
-          });
+        $.ajax({
+          url: "https://localhost:7290/api/Posts/getbyclass/" + classId,
+          type: "GET",
+          headers: { Authorization: "Bearer " + token },
+          success: function (data) {
+            // Render the posts on the page
+            renderPosts(data);
+          },
+          error: function (xhr, status, err) {
+            alert("Failed to get posts for class " + classId);
+          },
+        });
 
-          // Function to render the posts on the page
-         function renderPosts(posts) {
-             // Loop through each post and append it to the container
-                posts.forEach((post) => {
-                    var postUI = $(`
+        // Function to render the posts on the page
+        function renderPosts(posts) {
+          // Loop through each post and append it to the container
+          posts.forEach((post) => {
+            var postUI = $(`
                         <div class="card mb-3">
                              <div class="card-body">
                                <div class="media">
-                                    <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${post.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
+                                    <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${
+                                      post.user.userEmail
+                                    }.svg" alt="User Avatar" width="50" height="50">
                                     <div class="media-body">
-                                        <h5 class="mt-0">${post.user.fullName}</h5>
-                                        <p class="text-muted">Posted on ${moment(post.createdAt).fromNow()}</p>
+                                        <h5 class="mt-0">${
+                                          post.user.fullName
+                                        }</h5>
+                                        <p class="text-muted">Posted on ${moment(
+                                          post.createdAt
+                                        ).fromNow()}</p>
                                     </div>
                                 </div>
                                 <div class="post-header-right">
@@ -130,45 +136,81 @@ $(document).ready(function () {
                             <div class="post-body">
                                 <h5 class="card-text">${post.postContent}</h5>
                             </div>
-                            <hr>
-                            <div class="mb-3">
-                                <a href="file.pdf">Attachment</a>
+                            <div class="my-3 px-3" >
+                                ${renderResources(post.resources)}
                             </div>
                             <div class="card mb-3">
                             <div class="card-body">
                                 <form class="col-12">
                                     <div class="form-group">
-                                        <textarea class="form-control" id="comment" rows="3" placeholder="Add a comment..."></textarea>
+                                        <textarea class="form-control mb-3" id="comment" rows="3" placeholder="Add a comment..."></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
                             </div>
                         </div>
                         <div class="card">
-                            <div class="comment">
-                                Comments
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <img class="mr-3 rounded-circle" src="avatar.jpg" alt="User Avatar" width="50" height="50">
-                                        <div class="media-body">
-                                            <h5 class="mt-0">Jane Doe</h5>
-                                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                                            <p class="text-muted">Posted on January 2, 2023</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+                                  ${renderComments(post.comments)}
                         </div>
                         </div>
                     `);
-                    postContainer.append(postUI);
-                });
-                    
-         }
-      }
+            postContainer.append(postUI);
+          });
+        }
 
+        // Function to render the resources (attachments) of a post
+        function renderResources(resources) {
+          var resourcesHtml = "";
+
+          for (var i = 0; i < resources.length; i++) {
+            var resource = resources[i];
+            resourcesHtml +=
+              `
+                <div class="col-12">
+                    <div class="card mb-3" style= "background: #e3e4eb;">
+                        <div class="card-body">
+                            <a href="` +
+              resource.fileUrl +
+              `" download>` +
+              resource.resourceName +
+              `</a>
+              <i class="fa-solid fa-download"></i>
+                        </div>
+                    </div>
+                </div>`;
+          }
+
+          return resourcesHtml;
+        }
+
+        //function to render comments of a post
+        function renderComments(comments) {
+          var html = "";
+          if (comments.length > 0) {
+            html += `<div class="comment">
+                             Comments
+                      </div>
+                 <ul class="list-group list-group-flush">`;
+          }
+          for (var i = 0; i < comments.length; i++) {
+            var comment = comments[i];
+            html += ` <li class="list-group-item">
+                            <div class="media">
+                                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${post.user.userEmail}.svg" alt="User Avatar" width="50" height="50">
+                                <div class="media-body">
+                                    <h5 class="mt-0">Jane Doe</h5>
+                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                    <p class="text-muted">Posted on January 2, 2023</p>
+                                </div>
+                            </div>
+                        </li>`;
+            if (i == comments.length - 1) {
+              html += `</ul>`;
+            }
+          }
+          return html;
+        }
+      }
 
       if (tabIndex == 2) {
         $("#student-list").empty();
