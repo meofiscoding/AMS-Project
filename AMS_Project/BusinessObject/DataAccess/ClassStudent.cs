@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace BusinessObject.DataAccess
 {
@@ -18,9 +17,8 @@ namespace BusinessObject.DataAccess
 
         public virtual Class? IdClassNavigation { get; set; }
         public virtual User? IdStudentNavigation { get; set; }
-        [JsonIgnore]
         public virtual ICollection<Submission> Submissions { get; set; }
-        [JsonIgnore]
+
         public virtual ICollection<Resource> Resources { get; set; }
     }
 }

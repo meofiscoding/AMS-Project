@@ -10,6 +10,7 @@ namespace BusinessObject.DataAccess
             Assignments = new HashSet<Assignment>();
             ClassStudents = new HashSet<ClassStudent>();
             Groups = new HashSet<Group>();
+            Posts = new HashSet<Post>();
         }
 
         public int Id { get; set; }
@@ -24,5 +25,6 @@ namespace BusinessObject.DataAccess
         public virtual ICollection<Assignment> Assignments { get; set; }
         public virtual ICollection<ClassStudent> ClassStudents { get; set; }
         public virtual ICollection<Group> Groups { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
     }
 }

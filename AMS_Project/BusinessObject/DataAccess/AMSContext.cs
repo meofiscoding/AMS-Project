@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
 
 namespace BusinessObject.DataAccess
 {
@@ -17,24 +16,14 @@ namespace BusinessObject.DataAccess
         {
         }
 
-
-
-        private void EnsureRolesSeeded()
-        {
-            if (!Roles.Any())
-            {
-                Roles.Add(new Role { RoleName = "Student" });
-                Roles.Add(new Role { RoleName = "Teacher" });
-                SaveChanges();
-            }
-        }
-
         public virtual DbSet<Assignment> Assignments { get; set; } = null!;
         public virtual DbSet<Chat> Chats { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
         public virtual DbSet<ClassStudent> ClassStudents { get; set; } = null!;
+        public virtual DbSet<Comment> Comments { get; set; } = null!;
         public virtual DbSet<Group> Groups { get; set; } = null!;
         public virtual DbSet<GroupStudent> GroupStudents { get; set; } = null!;
+        public virtual DbSet<Post> Posts { get; set; } = null!;
         public virtual DbSet<Resource> Resources { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<Submission> Submissions { get; set; } = null!;
@@ -42,11 +31,11 @@ namespace BusinessObject.DataAccess
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var builder = new ConfigurationBuilder()
-                 .SetBasePath(Directory.GetCurrentDirectory())
-                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            IConfigurationRoot configuration = builder.Build();
-            optionsBuilder.UseSqlServer(configuration.GetConnectionString("AMS"));
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("server =(local); database = AMS;uid=sa;pwd=19112001");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -230,6 +219,50 @@ namespace BusinessObject.DataAccess
                         });
             });
 
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.ToTable("Comment");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Content).HasColumnName("content");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ParentCommentId).HasColumnName("parent_comment_id");
+
+                entity.Property(e => e.PostId).HasColumnName("post_id");
+
+                entity.Property(e => e.ResourceId).HasColumnName("resource_id");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.ParentComment)
+                    .WithMany(p => p.InverseParentComment)
+                    .HasForeignKey(d => d.ParentCommentId)
+                    .HasConstraintName("FK__Comment__parent___7A672E12");
+
+                entity.HasOne(d => d.Post)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.PostId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Comment__post_id__787EE5A0");
+
+                entity.HasOne(d => d.Resource)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.ResourceId)
+                    .HasConstraintName("FK__Comment__resourc__7B5B524B");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Comment__user_id__797309D9");
+            });
+
             modelBuilder.Entity<Group>(entity =>
             {
                 entity.ToTable("Group");
@@ -295,6 +328,61 @@ namespace BusinessObject.DataAccess
                     .WithMany(p => p.GroupStudents)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__Group_Stu__user___38996AB5");
+            });
+
+            modelBuilder.Entity<Post>(entity =>
+            {
+                entity.ToTable("Post");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.ClassId).HasColumnName("class_id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("datetime")
+                    .HasColumnName("created_at")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.PostContent)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("post_content");
+
+                entity.Property(e => e.PostTitle)
+                    .HasMaxLength(255)
+                    .IsUnicode(false)
+                    .HasColumnName("post_title");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.Class)
+                    .WithMany(p => p.Posts)
+                    .HasForeignKey(d => d.ClassId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Post__class_id__6FE99F9F");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Posts)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Post__user_id__70DDC3D8");
+
+                entity.HasMany(d => d.Resources)
+                    .WithMany(p => p.Posts)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "PostResource",
+                        l => l.HasOne<Resource>().WithMany().HasForeignKey("ResourceId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PostResou__resou__75A278F5"),
+                        r => r.HasOne<Post>().WithMany().HasForeignKey("PostId").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__PostResou__post___74AE54BC"),
+                        j =>
+                        {
+                            j.HasKey("PostId", "ResourceId").HasName("PK__PostReso__1A4FD8A181887A99");
+
+                            j.ToTable("PostResource");
+
+                            j.IndexerProperty<int>("PostId").HasColumnName("post_id");
+
+                            j.IndexerProperty<int>("ResourceId").HasColumnName("resource_id");
+                        });
             });
 
             modelBuilder.Entity<Resource>(entity =>

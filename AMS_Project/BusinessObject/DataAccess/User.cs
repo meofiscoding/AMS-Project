@@ -12,8 +12,10 @@ namespace BusinessObject.DataAccess
             ChatSenders = new HashSet<Chat>();
             ClassStudents = new HashSet<ClassStudent>();
             Classes = new HashSet<Class>();
+            Comments = new HashSet<Comment>();
             GroupStudents = new HashSet<GroupStudent>();
             Groups = new HashSet<Group>();
+            Posts = new HashSet<Post>();
             Submissions = new HashSet<Submission>();
         }
 
@@ -29,8 +31,10 @@ namespace BusinessObject.DataAccess
         public virtual ICollection<Chat> ChatSenders { get; set; }
         public virtual ICollection<ClassStudent> ClassStudents { get; set; }
         public virtual ICollection<Class> Classes { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<GroupStudent> GroupStudents { get; set; }
         public virtual ICollection<Group> Groups { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Submission> Submissions { get; set; }
     }
 }
