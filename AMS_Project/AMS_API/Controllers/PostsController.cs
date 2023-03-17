@@ -20,14 +20,16 @@ namespace AMS_API.Controllers
         private readonly IResourceRepository _resourceRepository;
         private readonly ICommentRepository _commentRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        public PostsController(IClassRepository classRepository, IPostRepository postRepository, IResourceRepository resourceRepository, ICommentRepository commentRepository, IUserRepository userRepository, IUserRepository userRepository1)
+        public PostsController(IClassRepository classRepository, IPostRepository postRepository, IResourceRepository resourceRepository, ICommentRepository commentRepository, IUserRepository userRepository, IRoleRepository roleRepository)
         {
             _classRepository = classRepository;
             _postRepository = postRepository;
             _resourceRepository = resourceRepository;
             _commentRepository = commentRepository;
-            _userRepository = userRepository1;
+            _userRepository = userRepository;
+            _roleRepository = roleRepository;
         }
 
         // GET: api/<PostsController>
@@ -48,7 +50,8 @@ namespace AMS_API.Controllers
             {
                 post.Comments = _commentRepository.GetCommentsByPostId(post.Id);
                 post.User = _userRepository.GetUserById(post.UserId);
-                //get list resource of this post
+                //assign role to user
+                post.User.UserRole = _roleRepository.GetRole(post.User.UserRoleId.Value);
                 post.Resources = _resourceRepository.GetResourcesByPostId(post.Id);
             }
             return Ok(posts);

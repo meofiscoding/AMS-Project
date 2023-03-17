@@ -18,6 +18,11 @@ $(document).ready(function () {
     // Prompt the user to log in again
     alert("Your session has expired. Please log in again.");
   } else {
+     //replace src attribute in $(".teacher-ava")
+     $(".post-ava").attr(
+        "src",
+        `https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg`
+      );
     document
       .getElementById("upload-button")
       .addEventListener("click", function () {
@@ -122,8 +127,9 @@ $(document).ready(function () {
                                     }.svg" alt="User Avatar" width="50" height="50">
                                     <div class="media-body">
                                         <h5 class="mt-0">${
-                                          post.user.fullName
+                                          post.user.fullName == decodedToken.FullName? "You" : post.user.fullName
                                         }</h5>
+                                        ${(post.user.userRole.roleName.toLowerCase()) == "teacher" ? 'Teacher <i class="fa-solid fa-crown"></i>' : ''}
                                         <p class="text-muted">Posted on ${moment(
                                           post.createdAt
                                         ).fromNow()}</p>
@@ -294,11 +300,6 @@ $(document).ready(function () {
         $(".class-title").html(data.className);
         $("#stream-classname").html(data.className);
         $("#stream-classcode").html("Class Code: " + data.classCode);
-        //replace src attribute in $(".teacher-ava")
-        $(".teacher-ava").attr(
-          "src",
-          `https://avatars.dicebear.com/api/avataaars/${data.teacher.userEmail}.svg`
-        );
       },
       error: function (xhr, status, error) {
         alert(xhr.responseText);
