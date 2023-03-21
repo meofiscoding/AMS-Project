@@ -19,6 +19,7 @@
         <div class="row col-md-12">
             <div class="col-md-3 up-coming">
                 <strong>No assignment due in this week!!</strong>
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Assignment</button>
             </div>
             <div class="col-md-9">
                 <!-- Post input -->
@@ -62,6 +63,8 @@
         </ul>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style=" color: #0a5e15;">Students</h3>
+            <!-- Button export student list -->
+            <button class="btn btn-primary" id="export-student-list">Export Student List</button>
             <strong class="add-student" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Student <i class="fa-solid fa-user-plus"></i></strong>
         </div>
         <ul id="student-list">
@@ -71,6 +74,11 @@
 </div>
 
 <div id="tab4" class="tabcontent">
+    <div class="no-group">
+         <img src="~/img/no-results.png" alt="Coming soon" class="mt-5"/>
+         <strong class="my-3">No group found!</strong>
+        <div id="upload-csv"></div>
+    </div>
 </div>
 
 <!-- Bootstrap modal which has an input search and a button invite-->

@@ -251,10 +251,10 @@ $(document).ready(function () {
         }
 
         //add comment
-        $(".post-container").on("click", ".add-comment", function(e) {
+        $(".post-container").on("click", ".add-comment", function (e) {
           //get comment
           var comment = $(this).closest("form").find("#comment").val();
-          var postId = $(this).data('post-id');
+          var postId = $(this).data("post-id");
           $.ajax({
             url: "https://localhost:7290/api/Comments",
             type: "POST",
@@ -469,6 +469,65 @@ $(document).ready(function () {
           alert(xhr.responseText);
         },
       });
+    });
+
+    //exportToCsv
+    function exportToCsv(filename, rows) {
+      var processRow = function (row) {
+        var finalVal = "";
+        for (var j = 0; j < row.length; j++) {
+          var innerValue = row[j] === null ? "" : row[j].toString();
+          if (row[j] instanceof Date) {
+            innerValue = row[j].toLocaleString();
+          }
+          var result = innerValue.replace(/"/g, '""');
+          if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+          if (j > 0) finalVal += ",";
+          finalVal += result;
+        }
+        return finalVal + "\n";
+      };
+
+      var csvFile = "";
+      for (var i = 0; i < rows.length; i++) {
+        csvFile += processRow(rows[i]);
+      }
+
+      var blob = new Blob([csvFile], { type: "text/csv;charset=utf-8;" });
+      if (navigator.msSaveBlob) {
+        navigator.msSaveBlob(blob, filename);
+      } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+          var url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", filename);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
+    }
+
+    //on Click #export-student-list to export student list to excel
+    $("#export-student-list").click(function () {
+      debugger;
+      var rows = [];
+      rows.push(["Group Name", "Student Name"]);
+      var studentList = $("#student-list");
+      //get all student in student-list
+      var students = studentList.find("li");
+      //loop through each student
+      for (var i = 0; i < students.length; i++) {
+        var student = students[i];
+        //get student name
+        var studentName = $(student).find(".user-name").html();
+        //add student name and email to rows
+        rows.push(["", studentName]);
+      }
+      //export to excel
+      exportToCsv("student-list.csv", rows);
     });
 
     $(".btn-post").click(function (e) {

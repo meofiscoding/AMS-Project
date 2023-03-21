@@ -89,6 +89,7 @@
         border: 1px solid #b3a6a6;
         border-radius: 10px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         height: 200px;
         justify-content: center;
@@ -142,4 +143,23 @@
 
     video {
         width: 50%;
+    }
+
+
+    .no-group{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .no-group img{
+        width: 10%;
+    }
+
+    #upload-csv{
+        width: 400px;
+        height: 400px;
+        border: 3px solid black;
+        border-style: dotted;
     }
