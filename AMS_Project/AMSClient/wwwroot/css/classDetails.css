@@ -162,4 +162,27 @@
         height: 400px;
         border: 3px solid black;
         border-style: dotted;
+        background: white;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .wrapper{
+        padding: 40px;
+        background: #f0f2ff;
+        border-radius: 10px;
+    }
+
+    .suggest{
+        padding-bottom: 10px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+    }
+
+    .suggest h5{
+        font-weight: bold;
     }

@@ -547,9 +547,42 @@ $(document).ready(function () {
       });
     });
 
+    //-------------------------------- HANDLE CSV FILE --------------------------------
+
+    var uploadCSV = $("#upload-csv");
+
+    //on dragover event
+    uploadCSV.on("dragover", function (e) {
+      e.preventDefault();
+      //scale .upload-icon
+      $(".upload-icon").css("transform", "scale(1.2)");
+    });
+
+    //on dragleave event
+    uploadCSV.on("dragleave", function (e) {
+      e.preventDefault();
+      //scale .upload-icon
+      $(".upload-icon").css("transform", "scale(1)");
+    });
+
+    //drop event
+    uploadCSV.on("drop", function (e) {
+      e.preventDefault();
+      //scale .upload-icon
+      $(".upload-icon").css("transform", "scale(1)");
+      //get files
+      const files = e.originalEvent.dataTransfer.files;
+      handleFiles(files);
+    });
+
     //on click #csv-file
     $("#csv-file").change(function (e) {
-      const file = e.target.files[0];
+      const files = e.target.files;
+      handleFiles(files);
+    });
+
+    function handleFiles(files) {
+      const file = files[0];
       if (!file || file.type !== "text/csv") {
         alert("Please select a CSV file");
         return;
@@ -599,7 +632,7 @@ $(document).ready(function () {
           },
         });
       }
-    });
+    };
     
   }
 );

@@ -87,9 +87,19 @@
     <div class="no-group">
          <img src="~/img/no-results.png" alt="Coming soon" class="mt-5"/>
          <strong class="my-3">No group found!</strong>
-        <div id="upload-csv">
-            <input type="file" id="csv-file" accept=".csv" />
-        </div>
+         <div class="wrapper">
+            <div class="suggest">
+                <h5>Invite new list</h5>
+                <a class="btn btn-warning text-white" href="~/sample/student-list.csv" download>Download sample</a>
+            </div>
+            <div id="upload-csv">
+                 <img src="/img/upload.png" alt="Upload" style="width: 53%;" class="upload-icon">
+                 <span> Drop your .CSV file to import new groups</span>
+                 <span>Or</span>
+                 <label for="csv-file" class="btn btn-primary">Upload List</label>
+                 <input type="file" id="csv-file" accept=".csv" class="d-none"/>
+            </div>
+         </div>
     </div>
 </div>
 
