@@ -3,27 +3,36 @@
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
 <script>
 debugger;
+        var decodedToken = null;
         var token = localStorage.getItem("token");
-        // Decode the token to get the expiration time
-        const decodedToken = jwt_decode(token);
-        // Check if the token has expired
-        const expirationTime = decodedToken.exp;
-        //get user name from token
-        //const userName = decodedToken.unique_name;
-
-        if (Date.now() >= expirationTime * 1000) {
-            // Prompt the user to log in again
-            alert("Your session has expired. Please log in again.");
-            // Remove the token from local storage
-            localStorage.removeItem("token");
-            $("#logout-btn").addClass("d-none");
-            // Redirect the user to the login page
+        if (token == null) {
             window.location.href = "/Login";
         }else{
-                $("#logout-btn").removeClass("d-none");
+            // Decode the token to get the expiration time
+                decodedToken = jwt_decode(token);
+                // Check if the token has expired
+                const expirationTime = decodedToken.exp;
+                //get user name from token
+                //const userName = decodedToken.unique_name;
+
+                if (Date.now() >= expirationTime * 1000) {
+                    // Prompt the user to log in again
+                    alert("Your session has expired. Please log in again.");
+                    // Remove the token from local storage
+                    localStorage.removeItem("token");
+                    $("#logout-btn").addClass("d-none");
+                    // Redirect the user to the login page
+                    window.location.href = "/Login";
+                }else{
+                        $("#logout-btn").removeClass("d-none");
+                }
         }
+       
             //event $("#logout-btn") click
             $("#logout-btn").click(function(e){
                 //call api logout

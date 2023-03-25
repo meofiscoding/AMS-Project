@@ -339,3 +339,7 @@
         margin-left: 10px;
       }
       
+      .message{
+        display: flex;
+        align-items: center;
+      }

@@ -1,6 +1,61 @@
 $(document).ready(function () {
   debugger;
-  var container = $("#chat-window-container");
+  // Create a connection to the SignalR hub
+  const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/chatHub")
+    .build();
+  //add click event to button send-message
+  $("#chat-window-container").on("click", ".send-message", function (e) {
+    e.preventDefault();
+    var message = $(this).closest(".chat-window").find(".chat-message").val();
+    var file = $("#send-file")[0].files[0];
+    var groupId = $(this).closest(".chat-window").data("group-id");
+    //get current user email
+    var userEmail = decodedToken.unique_name;
+    //get h4 html in chat-header
+    var group = $(this).closest(".chat-window").find(".chat-header h4").html();
+    // Send the message to the server
+    connection
+      .invoke("SendMessage", group + "-c" + groupId, userEmail, message, file)
+      .catch((error) => alert(error));
+
+    //call api to save message to database
+    // $.ajax({
+    //   url: "https://localhost:7290/api/ChatMessages",
+    //   type: "POST",
+    //   headers: { Authorization: "Bearer " + token },
+    //   data:
+    // Clear the message input
+    $(this).closest(".chat-window").find(".chat-message").val("");
+  });
+
+  //Receive a message from the server
+  connection.on("ReceiveMessage", function (user, groupId, message, file) {
+    //Add the message to the chat window
+    const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
+    if (file) {
+      // Create a new element to display the file
+      var fileLink = $("<a>")
+        .attr("href", fileUrl)
+        .attr("target", "_blank")
+        .text(fileName);
+      chatMessages.append($("<div>").append(fileLink));
+    } else {
+      const chatMessages = chatWindow.find(".chat-messages");
+      chatMessages.append(
+        `<div class="message">
+          <img src="https://avatars.dicebear.com/api/avataaars/${user}.svg" width="30px" height="30px" style="border-radius: 50%; margin-right: 10px" /> 
+          <div>
+              <strong>${user}</strong>
+              ${message} 
+          </div>
+          </div>`
+      );
+    }
+  });
+
+  // Start the connection to the hub
+  connection.start().catch((error) => alert(error));
   //replace src attribute in $(".teacher-ava")
   $(".post-ava").attr(
     "src",
@@ -331,7 +386,7 @@ $(document).ready(function () {
       $.ajax({
         url: "https://localhost:7290/api/Groups?classId=" + classId,
         type: "GET",
-        headers: { Authorization: "Bearer " + token },
+        // headers: { Authorization: "Bearer " + token },
         success: function (data) {
           //clear chat-list
           $("#chat-window-container").empty();
@@ -344,35 +399,87 @@ $(document).ready(function () {
             //loop through data
             for (var i = 0; i < data.length; i++) {
               var group = data[i];
+              //join teacher of class to group SignalR
+              //get teacherEmail from Cookies
+              var teacherEmail = Cookies.get("teacherEmail");
+              connection
+                .invoke(
+                  "JoinGroup",
+                  group.groupName + "-c" + group.id,
+                  teacherEmail
+                )
+                .catch(function (err) {
+                  return console.error(err.toString());
+                });
               //Generate chat html
-              var chatWindow = $("<div>").addClass("chat-window").attr("data-group-id", group.id);  
+              var chatWindow = $("<div>")
+                .addClass("chat-window")
+                .attr("data-group-id", group.id);
               var chatHeader = $("<div>").addClass("chat-header");
               //add h4 with group.groupName text
               chatHeader.append($("<h4>").text(group.groupName));
               //add button close chat inside chatHeader
-              chatHeader.append($("<button>").addClass("close-chat-window").html("&times;"));
+              chatHeader.append(
+                $("<button>").addClass("close-chat-window").html("&times;")
+              );
               //add chatHeader to chatWindow
               chatWindow.append(chatHeader);
               //add div with chat-body to chatWindow
               chatWindow.append($("<div>").addClass("chat-body"));
               //add div with class chat-messages to chat-body
-              chatWindow.find(".chat-body").append($("<div>").addClass("chat-messages"));
+              chatWindow
+                .find(".chat-body")
+                .append($("<div>").addClass("chat-messages"));
               //add div with class chat-footer to chatWindow
               chatWindow.append($("<div>").addClass("chat-footer"));
               //add form with class chat-form to chat-footer
-              chatWindow.find(".chat-footer").append($("<form>").addClass("chat-form"));
+              chatWindow
+                .find(".chat-footer")
+                .append($("<form>").addClass("chat-form"));
               //add div with class input-group inside form
-              chatWindow.find(".chat-form").append($("<div>").addClass("input-group"));
+              chatWindow
+                .find(".chat-form")
+                .append($("<div>").addClass("input-group"));
               //add input type = text class="form-control chat-message" placeholder="Type your message..." inside div
-              chatWindow.find(".input-group").append($("<input>").attr("type", "text").addClass("form-control chat-message").attr("placeholder", "Type your message..."));
+              chatWindow
+                .find(".input-group")
+                .append(
+                  $("<input>")
+                    .attr("type", "text")
+                    .addClass("form-control chat-message")
+                    .attr("placeholder", "Type your message...")
+                );
               //add div with class input-group-append inside div
-              chatWindow.find(".input-group").append($("<div>").addClass("input-group-append"));
+              chatWindow
+                .find(".input-group")
+                .append($("<div>").addClass("input-group-append"));
               //add button with class btn btn-primary chat-send inside div
-              chatWindow.find(".input-group-append").append($("<button>").attr("type","submit").addClass("btn btn-primary send-message").text("Send"));
+              chatWindow
+                .find(".input-group-append")
+                .append(
+                  $("<button>")
+                    .attr("type", "button")
+                    .addClass("btn btn-primary send-message")
+                    .text("Send")
+                );
               //add label for="send-file" class="btn btn-secondary" text is file inside div
-              chatWindow.find(".input-group-append").append($("<label>").attr("for","send-file").addClass("btn btn-secondary").text("File"));
+              chatWindow
+                .find(".input-group-append")
+                .append(
+                  $("<label>")
+                    .attr("for", "send-file")
+                    .addClass("btn btn-secondary")
+                    .text("File")
+                );
               //add input type="file" class="d-none" id="send-file" inside div
-              chatWindow.find(".input-group-append").append($("<input>").attr("type","file").addClass("d-none").attr("id","send-file"));
+              chatWindow
+                .find(".input-group-append")
+                .append(
+                  $("<input>")
+                    .attr("type", "file")
+                    .addClass("d-none")
+                    .attr("id", "send-file")
+                );
               //add css right to chatWindow
               chatWindow.css("right", i * 360 + "px");
               //append chatWindow to chat-container
@@ -388,6 +495,16 @@ $(document).ready(function () {
               //loop through student list in data[i]
               for (var j = 0; j < group.groupStudents.length; j++) {
                 var student = group.groupStudents[j].user;
+                //join group SignalR
+                connection
+                  .invoke(
+                    "JoinGroup",
+                    group.groupName + "-c" + group.id,
+                    student.userEmail
+                  )
+                  .catch(function (err) {
+                    return console.error(err.toString());
+                  });
                 html += `<div class="student-card mb-3">
                 <div style="display:flex; align-items:center">
                      <img src="https://avatars.dicebear.com/api/avataaars/${student.userEmail}.svg" alt="Student 2" class="avatar" width="50">
@@ -417,7 +534,7 @@ $(document).ready(function () {
         },
         error: function (xhr, status, error) {
           alert(xhr.responseText);
-        }
+        },
       });
     }
 
@@ -441,6 +558,8 @@ $(document).ready(function () {
     type: "GET",
     headers: { Authorization: "Bearer " + token },
     success: function (data) {
+      //save data.teacher.userEmail to cookie
+      Cookies.set("teacherEmail", data.teacher.userEmail);
       //set class-title html is class name
       $(".class-title").html(data.className);
       $("#stream-classname").html(data.className);

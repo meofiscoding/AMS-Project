@@ -9,7 +9,7 @@ using Repository;
 
 namespace AMS_API.Controllers
 {
-    [Authorize]
+    // [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GroupsController : ControllerBase
@@ -27,8 +27,8 @@ namespace AMS_API.Controllers
 
         //GET /groups?classId=1
         [HttpGet]
-        [CustomAuthorize("Teacher", typeof(IUserRepository))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // [CustomAuthorize("Teacher", typeof(IUserRepository))]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult Get(int classId)
         {
             try
@@ -51,8 +51,8 @@ namespace AMS_API.Controllers
 
         // POST api/<GroupsController>
         [HttpPost("addGroup")]
-        [CustomAuthorize("Teacher", typeof(IUserRepository))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // [CustomAuthorize("Teacher", typeof(IUserRepository))]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Post(AddGroupViewModel addGroupViewModel)
         {
             try
@@ -88,9 +88,6 @@ namespace AMS_API.Controllers
             {
                 return Conflict(ex.Message);
             }
-
-
-
         }
     }
 }
