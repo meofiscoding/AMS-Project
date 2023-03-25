@@ -1,23 +1,5 @@
 $(document).ready(function () {
   debugger;
-  const token = localStorage.getItem("token");
-  //redirect to the login page if the local storage is empty
-  if (token == null) {
-    window.location.href = "/Login";
-    return;
-  }
-
-  // Decode the token to get the expiration time
-  const decodedToken = jwt_decode(token);
-  // Check if the token has expired
-  const expirationTime = decodedToken.exp;
-  //get user name from token
-  //const userName = decodedToken.unique_name;
-
-  if (Date.now() >= expirationTime * 1000) {
-    // Prompt the user to log in again
-    alert("Your session has expired. Please log in again.");
-  } else {
     //replace src attribute in $(".teacher-ava")
     $(".post-ava").attr(
       "src",
@@ -312,12 +294,13 @@ $(document).ready(function () {
               //looping through studentList and append to student-list
               for (var i = 0; i < studentList.length; i++) {
                 var student = studentList[i];
-                var html = `<div id="user-item-template">
-                                                    <li>
-                                                        <input type="checkbox" class="user-checkbox" id=${student.id}>
-                                                        <span class="user-name">${student.fullName}</span>
-                                                    </li>
-                                                </div>`;
+                debugger;
+                var html = `<tr>
+                              <td><input type="checkbox" class="user-checkbox" id="${student.id}"></td>
+                              <td class="user-avatar text-center"><img src="https://avatars.dicebear.com/api/avataaars/${student.userEmail}.svg" alt="${student.fullName}"></td>
+                              <td class="user-name">${student.fullName}</td>
+                              <td class="user-email">${student.userEmail}</td>
+                            </tr>`;
                 //append html to student-list
                 $("#student-list").append(html);
               }
@@ -473,6 +456,7 @@ $(document).ready(function () {
 
     //exportToCsv
     function exportToCsv(filename, rows) {
+      debugger;
       var processRow = function (row) {
         var finalVal = "";
         for (var j = 0; j < row.length; j++) {
@@ -514,21 +498,23 @@ $(document).ready(function () {
     $("#export-student-list").click(function () {
       debugger;
       var rows = [];
-      rows.push(["Group Name", "Student Name"]);
+      rows.push(["Group Name", "Student Name", "Student Email"]);
       var studentList = $("#student-list");
-      //get all student in student-list
-      var students = studentList.find("li");
-      //loop through each student
-      for (var i = 0; i < students.length; i++) {
-        var student = students[i];
-        //get student name
-        var studentName = $(student).find(".user-name").html();
+      //get all rows in student-list table
+      var students = studentList.find("tr");
+      //loop through each row
+      students.each(function () {
+        var student = $(this);
+        //get student name and email
+        var studentName = student.find(".user-name").html();
+        var studentEmail = student.find(".user-email").html();
         //add student name and email to rows
-        rows.push(["", studentName]);
-      }
+        rows.push(["", studentName, studentEmail]);
+      });
       //export to excel
       exportToCsv("student-list.csv", rows);
     });
+    
 
     $(".btn-post").click(function (e) {
       //create a new FormData object
@@ -560,5 +546,60 @@ $(document).ready(function () {
         },
       });
     });
+
+    //on click #csv-file
+    $("#csv-file").change(function (e) {
+      const file = e.target.files[0];
+      if (!file || file.type !== "text/csv") {
+        alert("Please select a CSV file");
+        return;
+      }
+    
+      Papa.parse(file, {
+        header: true,
+        complete: function (results) {
+          const groups = {};
+          let currentGroup = null;
+          let currentStudents = [];
+    
+          for (let i = 0; i < results.data.length-1; i++) {
+            const group_name = results.data[i]["Group Name"] || currentGroup;
+            const student_email = results.data[i]["Student Email"];
+    
+            if (group_name !== currentGroup) {
+              if (currentGroup !== null) {
+                groups[currentGroup] = currentStudents;
+              }
+              currentGroup = group_name;
+              currentStudents = [];
+            }
+            currentStudents.push(student_email);
+          }
+          if (currentGroup !== null) {
+            groups[currentGroup] = currentStudents;
+          }
+    
+          sendGroupsToApi(groups);
+        },
+      });
+    
+      function sendGroupsToApi(groups) {
+        $.ajax({
+          url: "https://localhost:7290/api/Groups/addGroup",
+          type: "POST",
+          contentType: "application/json",
+          headers: { Authorization: "Bearer " + token },
+          data: JSON.stringify({Groups: groups, ClassId: classId}),
+          success: function (data) {
+            alert(data);
+            location.reload();
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+          },
+        });
+      }
+    });
+    
   }
-});
+);

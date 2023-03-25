@@ -1,24 +1,5 @@
 $(document).ready(function () {
   debugger;
-  // Get the token from local storage
-  const token = localStorage.getItem("token");
-  //redirect to the login page if the local storage is empty
-  if (token == null) {
-    window.location.href = "/Login";
-    return;
-  }
-
-  // Decode the token to get the expiration time
-  const decodedToken = jwt_decode(token);
-  // Check if the token has expired
-  const expirationTime = decodedToken.exp;
-  //get user name from token
-  //const userName = decodedToken.unique_name;
-
-  if (Date.now() >= expirationTime * 1000) {
-    // Prompt the user to log in again
-    alert("Your session has expired. Please log in again.");
-  } else {
     $("#create-class-form").validate({
       rules: {
         classname: {
@@ -141,4 +122,4 @@ $(document).ready(function () {
       });
     });
   }
-});
+);
