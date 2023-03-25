@@ -19,5 +19,10 @@ namespace Repository
         {
             return GroupDAO.CreateGroup(group, classId);
         }
+
+        public List<Group> GetGroupsByClassId(int classId)
+        {
+            return GroupDAO.GetGroupsByClassId(classId);
+        }
     }
 }

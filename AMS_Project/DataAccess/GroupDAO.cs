@@ -39,5 +39,13 @@ namespace DataAccess
                 return newGroup.Id;
             }
         }
+
+        public static List<Group> GetGroupsByClassId(int classId)
+        {
+            using (var db = new AMSContext())
+            {
+                return db.Groups.Where(x => x.ClassId == classId).ToList();
+            }
+        }
     }
 }

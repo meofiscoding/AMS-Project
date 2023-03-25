@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObject.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
@@ -23,6 +24,15 @@ namespace DataAccess
                 db.SaveChanges();
             }
             return Task.CompletedTask;
+        }
+
+        public static List<GroupStudent> GetGroupStudentsByGroupId(int id)
+        {
+            using (var db = new AMSContext())
+            {
+                //get all groups and assign user in each groupstudent
+                return db.GroupStudents.Include(gs => gs.User).Where(gs => gs.GroupId == id).ToList();
+            }
         }
     }
 }

@@ -11,5 +11,6 @@ namespace Repository
     {
         bool CheckGroupExists(Dictionary<string, List<string>>.KeyCollection keys, int classId);
         int CreateGroup(string group, int classId);
+        List<Group> GetGroupsByClassId(int classId);
     }
 }

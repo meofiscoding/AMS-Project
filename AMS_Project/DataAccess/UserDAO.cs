@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
@@ -42,7 +43,8 @@ namespace DataAccess
             {
                 using (var db = new AMSContext())
                 {
-                    return db.Users.FirstOrDefault(u => u.Id == userId);
+                    //get user with role
+                    return db.Users.Include(u => u.UserRole).FirstOrDefault(u => u.Id == userId);
                 }
             }
             catch (Exception e)

@@ -1,4 +1,6 @@
 ﻿using AMS_API.ViewModel;
+using BusinessObject.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
@@ -23,8 +25,34 @@ namespace AMS_API.Controllers
             _userRepository = userRepository;
         }
 
+        //GET /groups?classId=1
+        [HttpGet]
+        [CustomAuthorize("Teacher", typeof(IUserRepository))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult Get(int classId)
+        {
+            try
+            {
+                //get group and list student of each group
+                List<Group> groups = _groupRepository.GetGroupsByClassId(classId);
+                foreach (var group in groups)
+                {
+                    var groupStudents = _groupStudentRepository.GetGroupStudentsByGroupId(group.Id);
+                    group.GroupStudents = groupStudents;
+                }
+                return Ok(groups);
+            }
+            catch (System.Exception ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
+
+
         // POST api/<GroupsController>
         [HttpPost("addGroup")]
+        [CustomAuthorize("Teacher", typeof(IUserRepository))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> Post(AddGroupViewModel addGroupViewModel)
         {
             try
