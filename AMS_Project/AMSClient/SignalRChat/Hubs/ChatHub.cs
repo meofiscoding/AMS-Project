@@ -24,8 +24,9 @@ namespace AMSClient.SignalRChat.Hubs
 
         public async Task JoinGroup(string groupName, string userName)
         {
+            var groupId = groupName.Substring(groupName.IndexOf("-c") + 2);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("UserJoined", userName, groupName);
+            await Clients.Group(groupName).SendAsync("UserJoined", userName, groupId);
         }
 
         public async Task LeaveGroup(string groupName)

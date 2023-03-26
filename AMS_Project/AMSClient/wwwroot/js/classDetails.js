@@ -77,6 +77,22 @@ $(document).ready(function () {
     );
   });
 
+  //on UserJoined
+  connection.on("UserJoined", function (user, groupId) {
+    //Add the message to the chat window
+    const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
+    const chatMessages = chatWindow.find(".chat-messages");
+    chatMessages.append(
+      `<div class="message">
+          <img src="https://avatars.dicebear.com/api/avataaars/${user}.svg" width="30px" height="30px" style="border-radius: 50%; margin-right: 10px" />
+          <div>
+              <strong>${user}</strong>
+              joined the group
+          </div>
+          </div>`
+    );
+  });
+
   //on Receive File
   connection.on("ReceiveFile", function (user, groupId, fileName, fileUrl) {
     //Add the message to the chat window
