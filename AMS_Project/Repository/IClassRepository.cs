@@ -10,6 +10,7 @@ namespace Repository
     public interface IClassRepository
     {
         Task CreateClass(Class @class);
+        Class GetClassByCode(string classCode);
         Task<Class> GetClassById(int id);
     }
 }

@@ -15,6 +15,11 @@ namespace Repository
             await ClassDAO.SaveClass(@class);
         }
 
+        public Class GetClassByCode(string classCode)
+        {
+            return ClassDAO.GetClassByCode(classCode);
+        }
+
         public async Task<Class> GetClassById(int id)
         {
             return await ClassDAO.GetClassById(id);

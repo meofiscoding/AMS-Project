@@ -24,6 +24,11 @@ namespace Repository
             return ClassStudentDAO.CheckIfStudentIsEnrolled(classId, item);
         }
 
+        public bool CheckIfUserIsEnrolled(int id, int userId)
+        {
+            return ClassStudentDAO.CheckIfUserIsEnrolled(id, userId);
+        }
+
         //create classStudent
         public Task CreateClassStudent(ClassStudent classStudent)
         {

@@ -506,7 +506,21 @@ $(document).ready(function () {
                </div>
            </div>
        </li>`;
-            $(e.target).closest(".card-body").prev().find("ul").append(html);
+            //if find ul
+            if (
+              $(e.target).closest(".card-body").prev().find("ul").length > 0
+            ) {
+              $(e.target).closest(".card-body").prev().find("ul").append(html);
+            } else {
+              //if not find ul
+              var ul = $(e.target).closest(".card-body").prev().find("div");
+              ul.append(`<div class="comment">
+                          <strong>Comments</strong>
+                                </div>
+                            <ul class="list-group list-group-flush">`);
+              ul.append(html);
+              ul.append(`</ul>`);
+            }
           },
           error: function (xhr, status, err) {
             alert("Failed to add comment");
@@ -557,8 +571,16 @@ $(document).ready(function () {
               var student = studentList[i];
               debugger;
               var html = `<tr>
-                              <td><input type="checkbox" class="user-checkbox" id="${student.id}"></td>
-                              <td class="user-avatar text-center"><img src="https://avatars.dicebear.com/api/avataaars/${student.userEmail}.svg" alt="${student.fullName}"></td>
+                              <td style="display: ${
+                                decodedToken.role.toLowerCase() === "student"
+                                  ? "none"
+                                  : "block"
+                              }"><input type="checkbox" class="user-checkbox" id="${
+                student.id
+              }"></td>
+                              <td class="user-avatar text-center"><img src="https://avatars.dicebear.com/api/avataaars/${
+                                student.userEmail
+                              }.svg" alt="${student.fullName}"></td>
                               <td class="user-name">${student.fullName}</td>
                               <td class="user-email">${student.userEmail}</td>
                             </tr>`;
@@ -591,8 +613,9 @@ $(document).ready(function () {
       $.ajax({
         url: "https://localhost:7290/api/Groups?classId=" + classId,
         type: "GET",
-        // headers: { Authorization: "Bearer " + token },
+        headers: { Authorization: "Bearer " + token },
         success: function (data) {
+          debugger;
           //clear chat-list
           $("#chat-window-container").empty();
           //clear group-list
@@ -620,6 +643,19 @@ $(document).ready(function () {
               var chatWindow = $("<div>")
                 .addClass("chat-window")
                 .attr("data-group-id", group.id);
+              //if decodedToken.role = "student" && decodedToken.id != data[i].groupStudent[i]
+
+              //check if decodedToken.id is in data[i].groupStudent
+              var isStudentInGroup = group.groupStudents.some(function (item) {
+                return item.userId == decodedToken.ID;
+              });
+              //if decodedToken.role = "student" && isStudentInGroup = false then set chat-window to d-none
+              if (
+                decodedToken.role.toLowerCase() == "student" &&
+                !isStudentInGroup
+              ) {
+                chatWindow.addClass("d-none");
+              }
               var chatHeader = $("<div>").addClass("chat-header");
               //add h4 with group.groupName text
               chatHeader.append($("<h4>").text(group.groupName));

@@ -73,46 +73,48 @@ namespace AMS_API.Controllers
             {
                 return BadRequest("Invalid user email");
             }
-
-            List<Resource> resources = new List<Resource>();
-            //looping through the files and save them to a local directory
-            foreach (var item in model.Files)
-            {
-                if (item.Length > 0)
-                {
-                    var fileName = Path.GetFileName(item.FileName);
-                    var parentPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-                    var directoryPath = Path.Combine(parentPath, "AMSClient", Directory.GetCurrentDirectory(), "wwwroot\\uploads");
-
-                    // Create directory if it doesn't exist
-                    if (!Directory.Exists(directoryPath))
-                    {
-                        Directory.CreateDirectory(directoryPath);
-                    }
-
-                    var filePath = Path.Combine(directoryPath, fileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await item.CopyToAsync(fileStream);
-                    }
-
-                    resources.Add(new Resource
-                    {
-                        ResourceName = fileName,
-                        FileUrl = $"/uploads/{fileName}",
-                        Type = item.ContentType,
-                    });
-                }
-            }
-
             var post = new Post
             {
                 ClassId = model.ClassId,
                 UserId = userId,
                 PostContent = model.Content,
-                Resources = resources
             };
+
+            if (model.Files != null && model.Files.Count >= 0)
+            {
+                List<Resource> resources = new List<Resource>();
+                //looping through the files and save them to a local directory
+                foreach (var item in model.Files)
+                {
+                    if (item.Length > 0)
+                    {
+                        var fileName = Path.GetFileName(item.FileName);
+                        var parentPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                        var directoryPath = Path.Combine(parentPath, "AMSClient","wwwroot\\uploads");
+
+                        // Create directory if it doesn't exist
+                        if (!Directory.Exists(directoryPath))
+                        {
+                            Directory.CreateDirectory(directoryPath);
+                        }
+
+                        var filePath = Path.Combine(directoryPath, fileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await item.CopyToAsync(fileStream);
+                        }
+
+                        resources.Add(new Resource
+                        {
+                            ResourceName = fileName,
+                            FileUrl = $"/uploads/{fileName}",
+                            Type = item.ContentType,
+                        });
+                    }
+                }
+                post.Resources = resources;
+            }
             await _postRepository.CreatePost(post);
             return Ok("Post created successfully");
         }

@@ -11,6 +11,7 @@ namespace Repository
     {
         Task AddStudentToClass(int classId, int item);
         bool CheckIfStudentIsEnrolled(int classId, int item);
+        bool CheckIfUserIsEnrolled(int id, int userId);
         Task CreateClassStudent(ClassStudent classStudent);
 
         //get all class by user id

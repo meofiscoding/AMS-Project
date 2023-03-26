@@ -52,4 +52,19 @@ debugger;
                     } 
                 })
             })
+
+            debugger;
+            //get user role
+            var role = decodedToken.role;
+            //get all element with data-required-role
+            const restrictedElements = document.querySelectorAll('[data-required-role]');
+            //get role from restricted element
+            for (const restrictedElement of restrictedElements) {
+                const requiredRole = restrictedElement.getAttribute('data-required-role');
+                //check role to lowercase and required role to lowercase
+                if (role.toLowerCase() !== requiredRole.toLowerCase()) {
+                    restrictedElement.style.display = 'none';
+                }
+            }
+
 </script>

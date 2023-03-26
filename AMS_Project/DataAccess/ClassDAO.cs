@@ -27,5 +27,13 @@ namespace DataAccess
                 return await context.Classes.FindAsync(id);
             }
         }
+
+        public static Class GetClassByCode(string classCode)
+        {
+            using (var context = new AMSContext())
+            {
+                return context.Classes.Where(x => x.ClassCode == classCode).FirstOrDefault();
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@
 <div class="tabview">
     <strong class="class-title" style="font-size: xx-large;"></strong>
     <button class="tablinks active">Class Work</button>
-    <button class="tablinks">Submission</button>
+    <button class="tablinks" data-required-role="teacher">Submission</button>
     <button class="tablinks">People</button>
     <button class="tablinks">Groups</button>
 </div>
@@ -64,13 +64,13 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style=" color: #0a5e15;">Students</h3>
             <!-- Button export student list -->
-            <button class="btn btn-primary" id="export-student-list">Export Student List</button>
-            <strong class="add-student" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Student <i class="fa-solid fa-user-plus"></i></strong>
+            <button class="btn btn-primary" id="export-student-list" data-required-role="teacher">Export Student List</button>
+            <strong class="add-student" data-bs-toggle="modal" data-bs-target="#exampleModal" data-required-role="teacher">Add Student <i class="fa-solid fa-user-plus"></i></strong>
         </div>
        <table class="table table-bordered my-3">
             <thead>
                 <tr>
-                <th><input type="checkbox" id="select-all"></th>
+                <th data-required-role="teacher"><input type="checkbox" id="select-all"></th>
                 <th class="text-center">Avatar</th>
                 <th>Full Name</th>
                 <th>Email</th>
@@ -93,7 +93,7 @@
     <div class="no-group d-none">
          <img src="~/img/no-results.png" alt="Coming soon" class="mt-5"/>
          <strong class="my-3">No group found!</strong>
-         <div class="wrapper">
+         <div class="wrapper" data-required-role="teacher">
             <div class="suggest">
                 <h5>Invite new list</h5>
                 <a class="btn btn-warning text-white" href="~/sample/student-list.csv" download>Download sample</a>

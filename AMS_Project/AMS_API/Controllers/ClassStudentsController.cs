@@ -23,12 +23,14 @@ namespace AMS_API.Controllers
         private readonly IClassStudentRepository _classStudentRepository;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IClassRepository _classRepository;
 
-        public ClassStudentsController(IClassStudentRepository classStudentRepository, IUserRepository userRepository, IRoleRepository roleRepository)
+        public ClassStudentsController(IClassStudentRepository classStudentRepository, IUserRepository userRepository, IRoleRepository roleRepository, IClassRepository classRepository)
         {
             _classStudentRepository = classStudentRepository;
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _classRepository = classRepository;
         }
 
         // GET: api/ClassStudents
@@ -60,6 +62,46 @@ namespace AMS_API.Controllers
                     return Ok(new { Role = userRole.RoleName, Classes = _classStudentRepository.GetClassByUserId(user.Id) });
                 default:
                     return BadRequest("Invalid user role");
+            }
+        }
+
+        [HttpPost("JoinClass/{classCode}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> JoinClass(string classCode)
+        {
+            var userId = GetUserId();
+
+            if (userId == 0)
+            {
+                return BadRequest("Invalid user email");
+            }
+
+            var user = _userRepository.GetUserById(userId);
+            if (user == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            //check if the class code is exist in Class table
+            var classExist = _classRepository.GetClassByCode(classCode);
+            if (classExist == null)
+            {
+                return BadRequest("Class code is not exist");
+            }else{
+                //check if user is already registered
+                bool isEnrolled = _classStudentRepository.CheckIfUserIsEnrolled(classExist.Id, userId);
+                if (isEnrolled)
+                {
+                    return BadRequest("You are already enrolled in this class");
+                }
+                //add student to classStudent
+                var classStudent = new ClassStudent
+                {
+                    IdClass = classExist.Id,
+                    IdStudent = userId
+                };
+                await _classStudentRepository.CreateClassStudent(classStudent);
+                return Ok(classExist);
             }
         }
 
