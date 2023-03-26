@@ -148,11 +148,102 @@ $(document).ready(function () {
     "src",
     `https://avatars.dicebear.com/api/avataaars/${decodedToken.unique_name}.svg`
   );
+
+  document
+    .getElementById("assignment-attachment")
+    .addEventListener("click", function () {
+      document.getElementById("attachment-input").click();
+    });
+
+  var AssignmentFiles = [];
+  $("#attachment-input").on("change", function (e) {
+    debugger;
+    var files = e.target.files;
+    for (var i = 0; i < files.length; i++) {
+      var file = files[i];
+      AssignmentFiles.push(file);
+      var fileUI = "";
+      //check file type
+      if (file.type.match("image.*")) {
+        fileUI = `<div class="file-ui"><img src="${URL.createObjectURL(
+          file
+        )}" width="50%"/>`;
+      } else if (file.type.match("video.*")) {
+        fileUI = ` <div class="file-ui"><video controls>
+              <source src="${URL.createObjectURL(file)}" type="video/mp4">
+              Your browser does not support the video tag.
+              </video>`;
+      } else {
+        fileUI =
+          '<div class="file-ui">' +
+          '<div style="display: flex; align-items-center">' +
+          '<i class="fa-solid fa-file-lines fa-2x"></i>' +
+          '<strong style="margin-left: 10px">' +
+          file.name +
+          "</strong>" +
+          "</div>";
+      }
+      //close button
+      fileUI +=
+        '<div class="close-button" style="margin-left: 10px">' +
+        '<i class="fa-solid fa-times fa-2x"></i>' +
+        "</div>" +
+        "</div>";
+      $(".selected-Assfiles").append(fileUI);
+    }
+  });
+
+  $(".selected-Assfiles").on("click", ".close-button", function (e) {
+    var fileUI = $(this).parent();
+    var fileName = fileUI.find("strong").text();
+    for (var i = 0; i < listFiles.length; i++) {
+      if (listFiles[i].name == fileName) {
+        listFiles.splice(i, 1);
+        break;
+      }
+    }
+    fileUI.remove();
+  });
+
+  $("#assignBtn").click(function (e) {
+    //create a new FormData object
+    var formData = new FormData();
+    // Append the classId and content from text area to the FormData object
+    formData.append("ClassId", classId);
+    //get text from text area
+    formData.append("Title", $("#title").val());
+    formData.append("Deadline", $("#dueDate").val());
+    formData.append("Description", $("#description").val());
+    // Loop through each file and append it to the FormData object
+    for (var i = 0; i < AssignmentFiles.length; i++) {
+      var file = AssignmentFiles[i];
+      formData.append("Files", file, file.name);
+    }
+
+    // Make an AJAX call to your server to add the post
+    $.ajax({
+      url: "https://localhost:7290/api/Assignments",
+      type: "POST",
+      headers: { Authorization: "Bearer " + token },
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (data) {
+        //refresh the page
+        location.reload();
+      },
+      error: function (xhr, status, error) {
+        alert(xhr.responseText);
+      },
+    });
+  });
+
   document
     .getElementById("upload-button")
     .addEventListener("click", function () {
       document.getElementById("upload-input").click();
     });
+
   var listFiles = [];
   $("#upload-input").on("change", function (e) {
     var files = e.target.files;
@@ -162,12 +253,14 @@ $(document).ready(function () {
       var fileUI = "";
       //check file type
       if (file.type.match("image.*")) {
-        fileUI = `<img src="${URL.createObjectURL(file)}" width="50%"/>`;
+        fileUI = `<div class="file-ui"><img src="${URL.createObjectURL(
+          file
+        )}" width="50%"/>`;
       } else if (file.type.match("video.*")) {
-        fileUI = ` <video controls>
-            <source src="${URL.createObjectURL(file)}" type="video/mp4">
-            Your browser does not support the video tag.
-            </video>`;
+        fileUI = ` <div class="file-ui"><video controls>
+              <source src="${URL.createObjectURL(file)}" type="video/mp4">
+              Your browser does not support the video tag.
+              </video>`;
       } else {
         fileUI = $(
           '<div class="file-ui">' +
@@ -176,14 +269,15 @@ $(document).ready(function () {
             '<strong style="margin-left: 10px">' +
             file.name +
             "</strong>" +
-            "</div>" +
-            //close button
-            '<div class="close-button" style="margin-left: 10px">' +
-            '<i class="fa-solid fa-times fa-2x"></i>' +
-            "</div>" +
-            +"<div>"
+            "</div>"
         );
       }
+      //close button
+      fileUI +=
+        '<div class="close-button" style="margin-left: 10px">' +
+        '<i class="fa-solid fa-times fa-2x"></i>' +
+        "</div>" +
+        "</div>";
       $(".selected-files").append(fileUI);
     }
   });

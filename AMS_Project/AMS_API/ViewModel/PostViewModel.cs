@@ -4,7 +4,7 @@
     {
             public string Content { get; set; }
             public int ClassId { get; set; }
-            public List<IFormFile> Files { get; set; }
+            public List<IFormFile>? Files { get; set; }
 
     }
 }

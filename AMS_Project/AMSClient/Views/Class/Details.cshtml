@@ -19,7 +19,7 @@
         <div class="row col-md-12">
             <div class="col-md-3 up-coming">
                 <strong>No assignment due in this week!!</strong>
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Assignment</button>
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#assignModal">Add Assignment</button>
             </div>
             <div class="col-md-9">
                 <!-- Post input -->
@@ -112,6 +112,48 @@
 <div id="chat-window-container">
 <!-- Chat window will be dynamically generated here -->
 
+</div>
+
+<!-- Bootstrap model for assign an Assignment with an input for title and description, select due date, add attachment -->
+<div class="modal fade" id="assignModal" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="assignModalLabel">Assign Assignment</h4>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="assignForm">
+          <div class="form-group my-3">
+            <label for="modal-title">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          <div class="form-group my-3">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+          <div class="form-group my-3">
+            <label for="dueDate">Due Date</label>
+            <input type="datetime-local" class="form-control" id="dueDate" name="dueDate" required>
+          </div>
+           <div class="selected-Assfiles my-3"></div>
+                <div class="attach-icon">
+                    <button class="btn btn-primary" type="button" id="assignment-attachment">
+                        <i class="fa-solid fa-paperclip"></i>
+                        Files
+                        <input type="file" class="file-input" id="attachment-input" style="display:none;">
+                    </button>
+                </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="assignBtn" class="btn btn-primary">Assign</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Bootstrap modal which has an input search and a button invite-->
