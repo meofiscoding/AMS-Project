@@ -45,7 +45,7 @@ namespace AMS_API.Controllers
         public async Task<ActionResult<List<PostViewModel>>> GetPostsAndComments(int classId)
         {
             var posts = await _postRepository.GetPostsByClassId(classId);
-             // Retrieve comments for this post
+            // Retrieve comments for this post
             foreach (var post in posts)
             {
                 post.Comments = _commentRepository.GetCommentsByPostId(post.Id);
@@ -81,7 +81,8 @@ namespace AMS_API.Controllers
                 if (item.Length > 0)
                 {
                     var fileName = Path.GetFileName(item.FileName);
-                    var directoryPath  = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads");
+                    var parentPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                    var directoryPath = Path.Combine(parentPath, "AMSClient", Directory.GetCurrentDirectory(), "wwwroot\\uploads");
 
                     // Create directory if it doesn't exist
                     if (!Directory.Exists(directoryPath))
@@ -99,7 +100,7 @@ namespace AMS_API.Controllers
                     resources.Add(new Resource
                     {
                         ResourceName = fileName,
-                        FileUrl = $"~/uploads/{fileName}",
+                        FileUrl = $"/uploads/{fileName}",
                         Type = item.ContentType,
                     });
                 }

@@ -31,10 +31,11 @@ namespace AMS_API.Controllers
             List<Resource> resources = new List<Resource>();
             foreach (var file in assignmentViewModel.Files)
             {
-                if(file.Length > 0)
+                if (file.Length > 0)
                 {
-                   var fileName = Path.GetFileName(file.FileName);
-                    var directoryPath  = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\uploads");
+                    var fileName = Path.GetFileName(file.FileName);
+                    var parentPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                    var directoryPath = Path.Combine(parentPath, "AMSClient", "wwwroot\\uploads");
 
                     // Create directory if it doesn't exist
                     if (!Directory.Exists(directoryPath))
@@ -52,7 +53,7 @@ namespace AMS_API.Controllers
                     resources.Add(new Resource
                     {
                         ResourceName = fileName,
-                        FileUrl = $"~/uploads/{fileName}",
+                        FileUrl = $"/uploads/{fileName}",
                         Type = file.ContentType,
                     });
                 }
@@ -69,6 +70,6 @@ namespace AMS_API.Controllers
             await _assignmentRepository.AddAssignment(assignment);
             return Ok(assignment);
         }
-       
+
     }
 }

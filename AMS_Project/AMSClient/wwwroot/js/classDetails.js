@@ -471,6 +471,7 @@ $(document).ready(function () {
 
       //add comment
       $(".post-container").on("click", ".add-comment", function (e) {
+        debugger;
         //get comment
         var comment = $(this).closest("form").find("#comment").val();
         var postId = $(this).data("post-id");
@@ -481,8 +482,30 @@ $(document).ready(function () {
           headers: { Authorization: "Bearer " + token },
           data: JSON.stringify({ Content: comment, PostId: postId }),
           success: function (data) {
-            alert("Comment added successfully!");
-            window.location.reload();
+            //append comment
+            var html = ` <li class="list-group-item">
+           <div class="media">
+               <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${
+                 comment.user.userEmail
+               }.svg" alt="User Avatar" width="50" height="50">
+               <div class="media-body">
+                   <strong class="mt-0">${
+                     comment.user.fullName == decodedToken.FullName
+                       ? "You"
+                       : comment.user.fullName
+                   }</strong>
+                     ${
+                       comment.user.userRole.roleName.toLowerCase() == "teacher"
+                         ? '<i class="fa-solid fa-crown"></i>'
+                         : ""
+                     }
+                   <p class="card-text">${comment.content}</p>
+                   <p class="text-muted">Commented on ${moment(
+                     comment.createdAt
+                   ).fromNow()}</p>
+               </div>
+           </div>
+       </li>`;
           },
           error: function (xhr, status, err) {
             alert("Failed to add comment");
