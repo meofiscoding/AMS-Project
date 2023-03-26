@@ -482,30 +482,31 @@ $(document).ready(function () {
           headers: { Authorization: "Bearer " + token },
           data: JSON.stringify({ Content: comment, PostId: postId }),
           success: function (data) {
+            //remove comment from text
+            $(e.target).closest("form").find("#comment").val("");
             //append comment
             var html = ` <li class="list-group-item">
            <div class="media">
                <img class="mr-3 rounded-circle" src="https://avatars.dicebear.com/api/avataaars/${
-                 comment.user.userEmail
+                 data.user.userEmail
                }.svg" alt="User Avatar" width="50" height="50">
                <div class="media-body">
                    <strong class="mt-0">${
-                     comment.user.fullName == decodedToken.FullName
+                     data.user.fullName == decodedToken.FullName
                        ? "You"
-                       : comment.user.fullName
+                       : data.user.fullName
                    }</strong>
                      ${
-                       comment.user.userRole.roleName.toLowerCase() == "teacher"
+                       data.user.userRole.roleName.toLowerCase() == "teacher"
                          ? '<i class="fa-solid fa-crown"></i>'
                          : ""
                      }
-                   <p class="card-text">${comment.content}</p>
-                   <p class="text-muted">Commented on ${moment(
-                     comment.createdAt
-                   ).fromNow()}</p>
+                   <p class="card-text">${data.content}</p>
+                   <p class="text-muted">Commented on ${moment().fromNow()}</p>
                </div>
            </div>
        </li>`;
+            $(e.target).closest(".card-body").prev().find("ul").append(html);
           },
           error: function (xhr, status, err) {
             alert("Failed to add comment");

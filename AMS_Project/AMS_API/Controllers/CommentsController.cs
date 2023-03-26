@@ -35,8 +35,11 @@ namespace AMS_API.Controllers
                 PostId = model.PostId,
                 UserId = GetUserId(),
             };
+            //assign user to the comment
             await _commentRepository.CreateComment(comment);
-            return Ok();
+            var user = _userRepository.GetUserById(comment.UserId);
+            model.User = user;
+            return Ok(model);
         }
 
         private int GetUserId()
