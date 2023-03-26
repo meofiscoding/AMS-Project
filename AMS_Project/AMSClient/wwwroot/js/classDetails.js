@@ -13,19 +13,46 @@ $(document).ready(function () {
     var userEmail = decodedToken.unique_name;
     //get h4 html in chat-header
     var group = $(this).closest(".chat-window").find(".chat-header h4").html();
-    // Send the message to the server
-    connection
-      .invoke("SendMessage", group + "-c" + groupId, userEmail, message)
-      .catch((error) => alert(error));
-
     //call api to save message to database
-    // $.ajax({
-    //   url: "https://localhost:7290/api/ChatMessages",
-    //   type: "POST",
-    //   headers: { Authorization: "Bearer " + token },
-    //   data:
-    // Clear the message input
-    $(this).closest(".chat-window").find(".chat-message").val("");
+    $.ajax({
+      url: "https://localhost:7290/api/Groups/" + groupId + "/messages",
+      type: "POST",
+      data: JSON.stringify({
+        Message: message,
+        GroupId: groupId,
+        UserEmail: userEmail,
+      }),
+      contentType: "application/json",
+      success: function (data) {
+        // Send the message to the server
+        connection
+          .invoke("SendMessage", group + "-c" + groupId, userEmail, message)
+          .catch((error) => alert(error));
+        $(this).closest(".chat-window").find(".chat-message").val("");
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  });
+
+  //add click event to close-chat-window
+  $("#chat-window-container").on("click", ".close-chat-window", function (e) {
+    //check if chat-body has d-none class
+    if ($(this).closest(".chat-window").find(".chat-body").hasClass("d-none")) {
+      //add d-none to chat-body
+      $(this).closest(".chat-window").find(".chat-body").removeClass("d-none");
+      //add d-none to chat-footer
+      $(this)
+        .closest(".chat-window")
+        .find(".chat-footer")
+        .removeClass("d-none");
+    } else {
+      //remove d-none to chat-body
+      $(this).closest(".chat-window").find(".chat-body").addClass("d-none");
+      //remove d-none to chat-footer
+      $(this).closest(".chat-window").find(".chat-footer").addClass("d-none");
+    }
   });
 
   //#send-file on change
@@ -81,6 +108,9 @@ $(document).ready(function () {
   connection.on("UserJoined", function (user, groupId) {
     //Add the message to the chat window
     const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
+    //remove d-none in chat-body and chat-footer
+    chatWindow.find(".chat-body").removeClass("d-none");
+    chatWindow.find(".chat-footer").removeClass("d-none");
     const chatMessages = chatWindow.find(".chat-messages");
     chatMessages.append(
       `<div class="message">
@@ -97,8 +127,10 @@ $(document).ready(function () {
   connection.on("ReceiveFile", function (user, groupId, fileName, fileUrl) {
     //Add the message to the chat window
     const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
+    chatWindow.find(".chat-body").removeClass("d-none");
+    chatWindow.find(".chat-footer").removeClass("d-none");
     // Create a new element to display the file
-    var fileLink = `<a href="${fileUrl}" target="_blank">${fileName}</a>` 
+    var fileLink = `<a href="${fileUrl}" target="_blank">${fileName}</a>`;
     const chatMessages = chatWindow.find(".chat-messages");
     chatMessages.append(`<div class="message">
     <img src="https://avatars.dicebear.com/api/avataaars/${user}.svg" width="30px" height="30px" style="border-radius: 50%; margin-right: 10px" /> 
@@ -475,7 +507,7 @@ $(document).ready(function () {
               chatHeader.append($("<h4>").text(group.groupName));
               //add button close chat inside chatHeader
               chatHeader.append(
-                $("<button>").addClass("close-chat-window").html("&times;")
+                $("<button>").addClass("close-chat-window").html("-")
               );
               //add chatHeader to chatWindow
               chatWindow.append(chatHeader);

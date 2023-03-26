@@ -17,12 +17,14 @@ namespace AMS_API.Controllers
         private readonly IGroupRepository _groupRepository;
         private readonly IGroupStudentRepository _groupStudentRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IChatRepository _chatRepository;
 
-        public GroupsController(IGroupRepository groupRepository, IGroupStudentRepository groupStudentRepository, IUserRepository userRepository)
+        public GroupsController(IGroupRepository groupRepository, IGroupStudentRepository groupStudentRepository, IUserRepository userRepository, IChatRepository chatRepository)
         {
             _groupRepository = groupRepository;
             _groupStudentRepository = groupStudentRepository;
             _userRepository = userRepository;
+            _chatRepository = chatRepository;
         }
 
         //GET /groups?classId=1
@@ -125,6 +127,38 @@ namespace AMS_API.Controllers
                 return Ok($"{resoure.FileUrl}");
             }
             catch (Exception ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
+
+        //POST api/Groups/{groupId}/messages
+        [HttpPost("{groupId}/messages")]
+        public async Task<IActionResult> Post(GroupChatViewModel groupChat)
+        {
+            try
+            {
+                //get userId from groupChat.Useremail
+                int senderId = _userRepository.GetUserByEmail(groupChat.UserEmail).Id;
+                //get all members from groupChat
+                var members = _groupStudentRepository.GetGroupStudentsByGroupId(groupChat.GroupId);
+                //remove member which has same id with senderId
+                members.RemoveAll(x => x.UserId == senderId);
+                foreach (var member in members)
+                {
+                    //create chat
+                    var chat = new Chat
+                    {
+                        SenderId = senderId,
+                        ReceiverId = member.UserId,
+                        Message = groupChat.Message,
+                        GroupId = groupChat.GroupId,
+                    };
+                    await _chatRepository.CreateChat(chat);
+                }
+                return Ok("Message sent successfully");
+            }
+            catch (System.Exception ex)
             {
                 return Conflict(ex.Message);
             }

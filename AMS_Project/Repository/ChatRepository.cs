@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessObject.DataAccess;
 using DataAccess;
 
 namespace Repository
 {
     public class ChatRepository : IChatRepository
     {
-        public void SaveMessage(string groupName, string user, string message)
+        public Task CreateChat(Chat chat)
         {
-            // ChatDAO.SaveMessage(groupName, user, message);
+            return ChatDAO.CreateChat(chat);
         }
     }
 }

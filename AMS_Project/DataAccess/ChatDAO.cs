@@ -9,6 +9,15 @@ namespace DataAccess
 {
     public class ChatDAO
     {
+        public static async Task CreateChat(Chat chat)
+        {
+            using (var db = new AMSContext())
+            {
+                db.Chats.Add(chat);
+                await db.SaveChangesAsync();
+            }
+        }
+
         public static void SaveMessage(int groupid, int senderId, List<int> receiverIs, string message, string? filePath)
         {
             // Save message to database here
