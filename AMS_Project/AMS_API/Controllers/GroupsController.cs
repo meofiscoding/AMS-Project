@@ -89,5 +89,45 @@ namespace AMS_API.Controllers
                 return Conflict(ex.Message);
             }
         }
+
+        [HttpPost("uploadfile")]
+        public async Task<ActionResult> Post([FromForm]IFormFile file, [FromForm]int groupId)
+        {
+            try
+            {
+                var fileName = Path.GetFileName(file.FileName);
+                var parentPath  = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                var directoryPath = Path.Combine(parentPath,"AMSClient", "wwwroot", "uploads", "groups", groupId.ToString());
+
+                // Create directory if it doesn't exist
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                //get group by groupId
+                var group = _groupRepository.GetGroupById(groupId);
+                var resoure = new Resource
+                {
+                    ResourceName = fileName,
+                    FileUrl = $"/uploads/groups/{groupId}/{fileName}",
+                    Type = file.ContentType
+                };
+                group.Resources.Add(resoure);
+                await _groupRepository.UpdateGroup(group);
+                return Ok($"{resoure.FileUrl}");
+            }
+            catch (Exception ex)
+            {
+                return Conflict(ex.Message);
+            }
+        }
     }
 }

@@ -40,11 +40,33 @@ namespace DataAccess
             }
         }
 
+        public static Group GetGroupById(int groupId)
+        {
+            using (var db = new AMSContext())
+            {
+                return db.Groups.Where(x => x.Id == groupId).FirstOrDefault();
+            }
+        }
+
         public static List<Group> GetGroupsByClassId(int classId)
         {
             using (var db = new AMSContext())
             {
                 return db.Groups.Where(x => x.ClassId == classId).ToList();
+            }
+        }
+
+        public static async Task UpdateGroup(Group group)
+        {
+            using (var db = new AMSContext())
+            {
+                //load the group entity and its navigation propertie
+                db.Groups.Attach(group);
+                db.Entry(group).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                //eagerly load resources property
+                db.Entry(group).Collection(g => g.Resources).Load();
+                //update group entity
+                db.SaveChanges();
             }
         }
     }

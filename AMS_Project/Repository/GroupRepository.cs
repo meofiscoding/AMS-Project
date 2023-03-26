@@ -20,9 +20,19 @@ namespace Repository
             return GroupDAO.CreateGroup(group, classId);
         }
 
+        public Group GetGroupById(int groupId)
+        {
+            return GroupDAO.GetGroupById(groupId);
+        }
+
         public List<Group> GetGroupsByClassId(int classId)
         {
             return GroupDAO.GetGroupsByClassId(classId);
+        }
+
+        public Task UpdateGroup(Group group)
+        {
+            return GroupDAO.UpdateGroup(group);
         }
     }
 }

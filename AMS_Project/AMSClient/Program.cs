@@ -6,7 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    options.MaximumReceiveMessageSize = null;
+});
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

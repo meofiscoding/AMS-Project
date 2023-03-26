@@ -8,7 +8,6 @@ $(document).ready(function () {
   $("#chat-window-container").on("click", ".send-message", function (e) {
     e.preventDefault();
     var message = $(this).closest(".chat-window").find(".chat-message").val();
-    var file = $("#send-file")[0].files[0];
     var groupId = $(this).closest(".chat-window").data("group-id");
     //get current user email
     var userEmail = decodedToken.unique_name;
@@ -16,7 +15,7 @@ $(document).ready(function () {
     var group = $(this).closest(".chat-window").find(".chat-header h4").html();
     // Send the message to the server
     connection
-      .invoke("SendMessage", group + "-c" + groupId, userEmail, message, file)
+      .invoke("SendMessage", group + "-c" + groupId, userEmail, message)
       .catch((error) => alert(error));
 
     //call api to save message to database
@@ -29,29 +28,69 @@ $(document).ready(function () {
     $(this).closest(".chat-window").find(".chat-message").val("");
   });
 
+  //#send-file on change
+  $("#chat-window-container").on("change", "#send-file", function (e) {
+    var file = e.target.files[0];
+    var groupId = $(this).closest(".chat-window").data("group-id");
+    //get current user email
+    var userEmail = decodedToken.unique_name;
+    //get h4 html in chat-header
+    var group = $(this).closest(".chat-window").find(".chat-header h4").html();
+    // Convert the File object to an IFormFile
+    // Create a new FormData instance
+    var formData = new FormData();
+    formData.append("file", file, file.name);
+    //appen groupId
+    formData.append("groupId", groupId);
+    $.ajax({
+      url: "https://localhost:7290/api/Groups/uploadfile",
+      type: "POST",
+      // headers: { Authorization: "Bearer " + token },
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function (data) {
+        // On success, send the file path to the server via SignalR
+        connection
+          .invoke("SendMessage", group + "-c" + groupId, userEmail, data)
+          .catch((error) => alert(error));
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  });
+
   //Receive a message from the server
-  connection.on("ReceiveMessage", function (user, groupId, message, file) {
+  connection.on("ReceiveMessage", function (user, groupId, message) {
     //Add the message to the chat window
     const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
-    if (file) {
-      // Create a new element to display the file
-      var fileLink = $("<a>")
-        .attr("href", fileUrl)
-        .attr("target", "_blank")
-        .text(fileName);
-      chatMessages.append($("<div>").append(fileLink));
-    } else {
-      const chatMessages = chatWindow.find(".chat-messages");
-      chatMessages.append(
-        `<div class="message">
+    const chatMessages = chatWindow.find(".chat-messages");
+    chatMessages.append(
+      `<div class="message">
           <img src="https://avatars.dicebear.com/api/avataaars/${user}.svg" width="30px" height="30px" style="border-radius: 50%; margin-right: 10px" /> 
           <div>
               <strong>${user}</strong>
               ${message} 
           </div>
           </div>`
-      );
-    }
+    );
+  });
+
+  //on Receive File
+  connection.on("ReceiveFile", function (user, groupId, fileName, fileUrl) {
+    //Add the message to the chat window
+    const chatWindow = $(".chat-window[data-group-id='" + groupId + "']");
+    // Create a new element to display the file
+    var fileLink = `<a href="${fileUrl}" target="_blank">${fileName}</a>` 
+    const chatMessages = chatWindow.find(".chat-messages");
+    chatMessages.append(`<div class="message">
+    <img src="https://avatars.dicebear.com/api/avataaars/${user}.svg" width="30px" height="30px" style="border-radius: 50%; margin-right: 10px" /> 
+    <div>
+        <strong>${user}</strong>
+        ${fileLink} 
+    </div>
+    </div>`);
   });
 
   // Start the connection to the hub

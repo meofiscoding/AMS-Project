@@ -1,0 +1,198 @@
+Common Toolbox
+
+* TextBlock in XAML
+  - Block of text (like label)
+  - TextTrimming: Không cho Text box bị dài quá màn hình, chữ dài hơn chuyển thành ...
+  - TextWrapping: Wrapping hết về tới khung màn hình, thừa thì xuống dòng
+    + WrapWithOverFlow: Nếu 1 từ nào đó rất dài cuối câu, sẽ bị cắt đi, dòng mới là từ khác
+    + Wrap: Nếu 1 từ rất dài cuối dòng bị cắt thì ở dòng mới là kí tự tiếp theo
+  - Span: Thêm thẻ để xaml
+
+* TextBlock in code behind: 
+  - 
+* ComboBox
+
+
+* DockPanel 
+  - Control bên trong sẽ neo theo góc nào đó 
+  - LastChildFill: Phần tử cuối cùng của DockPanel
+
+BTVN
+* Demo tất cả control còn lại đến phần data grid
+* Thiết kế bài tập lab 
+
+Về nhà: 
+
+Canvas trong WPF là gì
+StackPanel: Chia theo ngăn
+WrapPanel: Break Content 
+Grid 
+
+Microsoft.Data.SqlClient(2.1.2)
+Microsoft.EntityFrameworkCore.Design (5.0.12)
+Microsoft.EntityFrameworkCore.SqlServer (5.0.12)
+Microsoft.Extensions.Configuration (5.0.0)
+Microsoft.Extensions.Configuration.Json (5.0.0)
+
+1. Partial class
+2.
+
+Thi sẽ sử dụng EF core. 
+
+Thao tác với EF Framework: 
+cài: dotnet tool install --global dotnet-ef --version 5.0.1
+gỡ: dotnet tool uninstall --global dotnet-ef
+
+Thứ tự:
+1. Sinh Database model theo dtb first:
+dotnet ef dbcontext scaffold "server =(local); database = PE_PRN_Spr23B1; uid=sa;pwd=19112001" Microsoft.EntityFrameworkCore.SqlServer --output-dir DataAccess
+2. Tạo file appsettings.json => Properties chuyển thành copy always
+{
+  "ConnectionStrings": {
+    "PE_PRN_Spr23B1": "server=(local);uid=sa;pwd=1234;database=PE_PRN_Spr23B1"
+  }
+}
+3. sửa trong class OnConfiguring 
+var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            IConfigurationRoot configuration = builder.Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("PE_PRN_Spr23B1"));
+
+
+car = context.Cars.SingleOrDefault (c => c.CarId == carId);
+
+Nếu dtb first thì phải chạy câu lệnh cũ và thêm '-f' 
+
+Combo box with type of car to choose
+
+AUTO Mapper step
+
+
+Sure, here's an example of how you can implement this mapping using AutoMapper in an ASP.NET Web API project that has already been scaffolded with Entity Framework:
+
+Install the AutoMapper NuGet package by running the following command in the Package Manager Console:
+powershell
+Copy code
+Install-Package AutoMapper
+Create a custom mapping profile for your DTO by creating a new class that inherits from the Profile class provided by AutoMapper. In this class, you will define the mapping between your entity model and DTO properties using the CreateMap and ForMember methods:
+csharp
+Copy code
+using AutoMapper;
+using YourApiProject.Models;
+using YourApiProject.Dtos;
+
+public class MappingProfile : Profile
+{
+    public MappingProfile()
+    {
+        // Define mapping between Order entity model and GetOrderDTO
+        CreateMap<Order, GetOrderDTO>()
+            .ForMember(dest => dest.CustomerName,
+                opt => opt.MapFrom(src => src.Customer.CompanyName))
+            .ForMember(dest => dest.EmployeeName,
+                opt => opt.MapFrom(
+                    src => src.Employee.FirstName + " " + src.Employee.LastName))
+            .ForMember(dest => dest.EmployeeDepartmentId,
+                opt => opt.MapFrom(src => src.Employee.Department.DepartmentId))
+            .ForMember(dest => dest.EmployeeDepartmentName,
+                opt => opt.MapFrom(src => src.Employee.Department.DepartmentName));
+    }
+}
+In this example, we are defining a mapping between the Order entity model and the GetOrderDTO DTO. We are using the ForMember method to specify how each property of the DTO should be mapped from the corresponding properties of the entity model.
+
+Configure AutoMapper in your Web API project by adding the following code to the ConfigureServices method in your Startup.cs file:
+csharp
+Copy code
+using AutoMapper;
+using YourApiProject.Models;
+using YourApiProject.Dtos;
+
+public void ConfigureServices(IServiceCollection services)
+{
+    // ...
+    services.AddAutoMapper(typeof(MappingProfile));
+    // ...
+}
+This code configures AutoMapper to use the MappingProfile class that you defined in step 2 for mapping between your entity models and DTOs.
+
+Use AutoMapper in your Web API controllers by injecting an IMapper instance into your controller class and using it to map between your entity models and DTOs:
+csharp
+Copy code
+using AutoMapper;
+using YourApiProject.Models;
+using YourApiProject.Dtos;
+
+[ApiController]
+[Route("api/orders")]
+public class OrdersController : ControllerBase
+{
+    private readonly YourDbContext _context;
+    private readonly IMapper _mapper;
+
+    public OrdersController(YourDbContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    [HttpGet("{id}")]
+    public ActionResult<GetOrderDTO> GetOrder(int id)
+    {
+        var order = _context.Orders.Include(o => o.Customer).Include(o => o.Employee).ThenInclude(e => e.Department).FirstOrDefault(o => o.OrderId == id);
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        var orderDto = _mapper.Map<GetOrderDTO>(order);
+
+        return Ok(orderDto);
+    }
+}
+In this example, we are injecting an instance of IMapper into our OrdersController constructor and using it to map between the Order entity model and the GetOrderDTO DTO. We are retrieving the Order entity from the database using Entity Framework, and then mapping it to a DTO using the Map method provided by AutoMapper. Finally, we are returning the mapped DTO as an HTTP response.
+
+By following these steps, you should be able to implement the mapping between your entity models and DTOs using AutoMapper in your ASP.NET Web API project.
+
+
+
+
+phanl4025@gmail.com
+what is GetOrderDTO look like
+Sure, here's an example of what the GetOrderDTO class might look like based on the AutoMapper configuration you provided:
+
+csharp
+Copy code
+public class GetOrderDTO
+{
+    public int OrderId { get; set; }
+    public DateTime OrderDate { get; set; }
+    public string CustomerName { get; set; }
+    public string EmployeeName { get; set; }
+    public int EmployeeDepartmentId { get; set; }
+    public string EmployeeDepartmentName { get; set; }
+}
+Note that the GetOrderDTO class only includes the properties that you want to return in the API response, and the property names correspond to the mapped source properties in the Order entity class.
+
+
+---------------------------------------DELETE MANY TO MANY-----------------------------------------------------------------
+
+
+The code you provided seems to be deleting the Order entity and its related OrderDetail entities correctly, but it's not configured to use cascade deletes for the relationship between Order and OrderDetail entities.
+
+To use cascade deletes in EF Core, you need to configure the relationship between the entities using the OnDelete method. In this case, you can add the following line of code to the OnModelCreating method in your DbContext:
+
+modelBuilder.Entity<OrderDetail>().HasOne(od => od.Order).WithMany(o => o.OrderDetails).OnDelete(DeleteBehavior.Cascade);
+
+This will configure the relationship between Order and OrderDetail entities to use cascade deletes, so that when an Order entity is deleted, all related OrderDetail entities will also be deleted.
+
+Once you add this configuration, you can remove the line _context.OrderDetails.RemoveRange(order.OrderDetails); from your code, because the cascade delete will automatically remove all related OrderDetail entities when the Order entity is deleted.
+
+
+
+
+
+
+
+
+
