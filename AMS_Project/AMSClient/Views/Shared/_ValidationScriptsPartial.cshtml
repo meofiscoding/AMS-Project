@@ -11,7 +11,7 @@
 debugger;
         var decodedToken = null;
         var token = localStorage.getItem("token");
-        if (token == null) {
+        if (!window.location.href.includes("\Login") && token == null) {
             window.location.href = "/Login";
         }else{
             // Decode the token to get the expiration time
